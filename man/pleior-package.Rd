@@ -19,6 +19,8 @@ in complex traits. \emph{Nature Genetics}, 51, 1339–1348.
 Useful links:
 \itemize{
   \item \url{https://danymukesha.github.io/pleior}
+  \item \url{https://github.com/danymukesha/pleior}
+  \item Report bugs at \url{https://github.com/danymukesha/pleior/issues}
 }
 
 }
