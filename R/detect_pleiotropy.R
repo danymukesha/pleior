@@ -6,6 +6,8 @@
 #' @param traits Character vector. Traits to analyze for pleiotropy (default: NULL, uses all traits).
 #' @param pvalue_threshold Numeric. P-value threshold for significance (default: 5e-8).
 #' @return A data.table with pleiotropic SNPs, their associated traits, and significance levels.
+#' @importFrom dplyr group_by summarise filter left_join n
+#' @importFrom stringr str_detect
 #' @examples
 #' \dontrun{
 #' gwas_data <- load_gwas_data("gwas_associations.tsv")
@@ -14,21 +16,42 @@
 #' }
 #' @export
 detect_pleiotropy <- function(gwas_data, traits = NULL, pvalue_threshold = 5e-8) {
-    if (!inherits(gwas_data, "data.table")) {
-        stop("Input must be a data.table")
+    if (!is.data.frame(gwas_data)) {
+        stop("Input must be a data.frame")
     }
-    if (!all(c("SNPS", "MAPPED_TRAIT", "PVALUE_MLOG") %in% names(gwas_data))) {
-        stop("Required columns missing: SNPS, MAPPED_TRAIT, PVALUE_MLOG")
+
+    required_cols <- c("SNPS", "MAPPED_TRAIT", "PVALUE_MLOG")
+    missing_cols <- setdiff(required_cols, names(gwas_data))
+    if (length(missing_cols) > 0) {
+        stop("Required columns missing: ", paste(missing_cols, collapse = ", "))
     }
 
     if (!is.null(traits)) {
-        gwas_data <- gwas_data[stringr::str_detect(MAPPED_TRAIT, paste(traits, collapse = "|")), ]
+        gwas_data <- gwas_data |>
+            filter(str_detect(MAPPED_TRAIT, paste(traits, collapse = "|")))
     }
 
-    pleio_table <- gwas_data[, .(TRAIT = MAPPED_TRAIT, PVALUE_MLOG = max(PVALUE_MLOG)), by = SNPS]
-    pleio_table <- pleio_table[, .(N_TRAITS = .N, TRAITS = paste(TRAIT, collapse = ";")), by = SNPS]
-    pleio_table <- pleio_table[N_TRAITS > 1, ]
+    # get the max PVALUE_MLOG for each SNP
+    pleio_table <- gwas_data |>
+        group_by(SNPS, MAPPED_TRAIT) |>
+        summarise(
+            TRAIT = MAPPED_TRAIT[which.max(PVALUE_MLOG)],
+            PVALUE_MLOG = max(PVALUE_MLOG), .groups = "drop"
+        )
 
-    pleio_results <- merge(pleio_table, gwas_data, by = "SNPS", allow.cartesian = TRUE)
-    pleio_results[PVALUE_MLOG >= -log10(pvalue_threshold), ]
+    # count the number of traits associated with each SNP and collapse them
+    pleio_table <- pleio_table |>
+        group_by(SNPS) |>
+        summarise(
+            N_TRAITS = n(),
+            TRAITS = paste(TRAIT, collapse = ";"), .groups = "drop"
+        ) |>
+        filter(N_TRAITS > 1) # i only keep SNPs associated with multiple traits
+
+    # merging back with the original data for further details
+    pleio_results <- pleio_table |>
+        left_join(gwas_data, by = "SNPS") |>
+        filter(PVALUE_MLOG >= -log10(pvalue_threshold))
+
+    return(pleio_results)
 }

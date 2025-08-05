@@ -1,0 +1,69 @@
+---
+title: "Getting Started with `pleior`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+*pleior* is an R package for analyzing pleiotropy in genome-wide association studies (GWAS).
+
+Here, we provide a basic workflow for using *pleior* and how to use its core functions to load, preprocess, and analyze GWAS data for pleiotropic effects.
+
+## Setup
+
+First, load the *pleior* package and the example dataset.
+
+```{r setup}
+library(pleior)
+data(gwas_subset)
+head(gwas_subset)
+```
+
+## Workflow
+
+### Step 1: Load GWAS data
+
+Although we use the example dataset here, you can load your own GWAS summary statistics.
+
+```{r load_data}
+gwas_data <- gwas_subset
+```
+
+### Step 2: Preprocess GWAS data
+
+Filter the data to retain significant associations.
+
+```{r preprocess}
+gwas_clean <- preprocess_gwas(gwas_data, pvalue_threshold = 5e-8)
+head(gwas_clean)
+```
+
+### Step 3: Detect pleiotropic SNPs
+
+Identify SNPs associated with multiple traits.
+
+```{r detect_pleiotropy}
+pleio_results <- detect_pleiotropy(gwas_clean, traits = c("Alzheimer disease", "myocardial infarction", "LDL cholesterol"))
+head(pleio_results)
+```
+
+### Step 4: Visualize results
+
+Create a Manhattan plot to visualize pleiotropic SNPs.
+
+```{r plot, fig.width=7, fig.height=5}
+plot_pleiotropy_manhattan(pleio_results, highlight_snp = "rs814573")
+```
+
+For more advanced features, such as functional annotation or interactive visualization, refer to the package documentation.
