@@ -19,3 +19,4 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 URL: https://danymukesha.github.io/pleior
+License: MIT + file LICENSE
