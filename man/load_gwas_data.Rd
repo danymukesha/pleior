@@ -9,7 +9,7 @@ load_gwas_data(file_path, sep = "\\t", header = TRUE, quote = "")
 \arguments{
 \item{file_path}{Character. Path to the GWAS summary statistics file (e.g., TSV, CSV).}
 
-\item{sep}{Character. Separator used in the file (default: "\t").}
+\item{sep}{Character. Separator used in the file (default: tab-separate).}
 
 \item{header}{Logical. Whether the file has a header row (default: TRUE).}
 
@@ -22,7 +22,6 @@ A data.table containing the GWAS data.
 Loads GWAS summary statistics from a file or URL, supporting various formats.
 }
 \examples{
-#'
 \dontrun{
 gwas_data <- load_gwas_data("gwas_associations.tsv")
 }

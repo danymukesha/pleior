@@ -20,14 +20,12 @@ plot_pleiotropy_manhattan <- function(pleio_data, highlight_snp = NULL) {
         stop("Input must be a data.frame")
     }
 
-    # Check if required columns are present
     required_cols <- c("SNPS", "CHR_ID", "CHR_POS", "PVALUE_MLOG")
     missing_cols <- setdiff(required_cols, names(pleio_data))
     if (length(missing_cols) > 0) {
         stop("Required columns missing: ", paste(missing_cols, collapse = ", "))
     }
 
-    # Prepare the plot data
     plot_data <- pleio_data |>
         mutate(CHR_POS = as.numeric(CHR_POS)) |>
         group_by(CHR_ID) |>
@@ -35,21 +33,28 @@ plot_pleiotropy_manhattan <- function(pleio_data, highlight_snp = NULL) {
         mutate(CHR_CUMPOS = CHR_POS + cumsum(c(0, diff(CHR_POS, lag = 1, differences = 1))[1:n()])) |>
         ungroup()
 
-    # Calculate x-axis positioning for chromosomes
     axis_df <- plot_data |>
         group_by(CHR_ID) |>
         summarise(CENTER = mean(CHR_CUMPOS), .groups = "drop")
 
-    # Create the basic Manhattan plot
+    max_p <- max(plot_data$PVALUE_MLOG) + 100
+
     p <- ggplot(plot_data, aes(x = CHR_CUMPOS, y = PVALUE_MLOG, color = as.factor(CHR_ID))) +
-        geom_point() +
+        geom_point(alpha = 0.7, size = 2) +
         scale_x_continuous(label = axis_df$CHR_ID, breaks = axis_df$CENTER) +
         scale_y_continuous(expand = c(0, 0)) +
-        labs(x = "Chromosome", y = "-log10(P-value)", title = "Manhattan Plot of Pleiotropic SNPs") +
+        labs(x = "Chromosome", y = "-log10(P-value)", title = "Manhattan plot of pleiotropic SNPs") +
         theme_minimal() +
-        theme(legend.position = "none")
+        ylim(0, max_p) +
+        theme(
+            legend.position = "none",
+            panel.grid.major.x = element_blank(),
+            panel.grid.minor = element_blank(),
+            axis.text.x = element_text(angle = 90, hjust = 1),
+            axis.ticks.x = element_blank(),
+            plot.title = element_text(hjust = 0.5)
+        )
 
-    # Highlight the selected SNP if provided
     if (!is.null(highlight_snp)) {
         highlight_data <- plot_data |>
             filter(SNPS == highlight_snp)

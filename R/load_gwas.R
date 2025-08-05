@@ -2,11 +2,11 @@
 #'
 #' Loads GWAS summary statistics from a file or URL, supporting various formats.
 #' @param file_path Character. Path to the GWAS summary statistics file (e.g., TSV, CSV).
-#' @param sep Character. Separator used in the file (default: "\t").
+#' @param sep Character. Separator used in the file (default: tab-separate).
 #' @param header Logical. Whether the file has a header row (default: TRUE).
 #' @param quote Character. Quote character used in the file (default: "").
 #' @return A data.table containing the GWAS data.
-#' @examples #'
+#' @examples
 #' \dontrun{
 #' gwas_data <- load_gwas_data("gwas_associations.tsv")
 #' }

@@ -1,8 +1,8 @@
 ---
-title: "Getting Started with `pleior`"
+title: "Introduction"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{introduction}
+  %\VignetteIndexEntry{Introduction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -13,8 +13,6 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-
-## Introduction
 
 *pleior* is an R package for analyzing pleiotropy in genome-wide association studies (GWAS).
 

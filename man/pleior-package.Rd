@@ -15,6 +15,13 @@ shared genetic mechanisms across complex traits.
 Watanabe, K., et al. (2019). A global overview of pleiotropy and genetic architecture
 in complex traits. \emph{Nature Genetics}, 51, 1339–1348.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://danymukesha.github.io/pleior}
+}
+
+}
 \author{
 \link{Dany MUKESHA}
 }

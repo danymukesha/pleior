@@ -1,13 +1,13 @@
 Package: pleior
-Title: Analyze pleiotropy in genome-wide association studies (GWAS)
+Title: Pleiotropy analysis in genome-wide association studies (GWAS)
 Version: 0.0.1
 Authors@R: 
     person("Dany", "Mukesha", , "danymukesha@gmail.com", 
             role = c("aut", "cre"),
            comment = c(ORCID = "0009-0001-9514-751X"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Description: Systematically identify and interpret pleiotropic genetic variants 
+    (SNPs associated with multiple traits) using GWAS data, with a focus 
+    on understanding shared biological mechanisms.
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -18,3 +18,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://danymukesha.github.io/pleior

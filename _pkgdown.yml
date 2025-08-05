@@ -1,4 +1,4 @@
-url: ~
+url: https://danymukesha.github.io/pleior/
 template:
   bootstrap: 5
-
+  bootswatch: cerulean
