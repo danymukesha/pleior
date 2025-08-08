@@ -21,3 +21,7 @@ VignetteBuilder: knitr
 URL: https://danymukesha.github.io/pleior, https://github.com/danymukesha/pleior
 License: MIT + file LICENSE
 BugReports: https://github.com/danymukesha/pleior/issues
+Imports: 
+    ggplot2, 
+    dplyr,
+    stringr
