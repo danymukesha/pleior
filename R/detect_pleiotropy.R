@@ -27,53 +27,53 @@
 #'
 #' @export
 detect_pleiotropy <- function(gwas_data, traits = NULL, pvalue_threshold = 5e-8) {
-  if (!is.data.frame(gwas_data)) {
-    stop("Input must be a data.frame or data.table")
-  }
+    if (!is.data.frame(gwas_data)) {
+        stop("Input must be a data.frame or data.table")
+    }
 
-  required_cols <- c("SNPS", "MAPPED_TRAIT", "PVALUE_MLOG")
-  missing_cols <- setdiff(required_cols, names(gwas_data))
-  if (length(missing_cols) > 0) {
-    stop("Required columns missing: ", paste(missing_cols, collapse = ", "))
-  }
-
-  if (nrow(gwas_data) == 0) {
-    stop("Input data is empty")
-  }
-
-  if (!is.null(traits)) {
-    trait_pattern <- paste(traits, collapse = "|")
-    gwas_data <- gwas_data |>
-      filter(str_detect(MAPPED_TRAIT, trait_pattern))
+    required_cols <- c("SNPS", "MAPPED_TRAIT", "PVALUE_MLOG")
+    missing_cols <- setdiff(required_cols, names(gwas_data))
+    if (length(missing_cols) > 0) {
+        stop("Required columns missing: ", paste(missing_cols, collapse = ", "))
+    }
 
     if (nrow(gwas_data) == 0) {
-      stop("No data found for specified traits")
+        stop("Input data is empty")
     }
-  }
 
-  pleio_table <- gwas_data |>
-    group_by(SNPS, MAPPED_TRAIT) |>
-    summarise(
-      TRAIT = MAPPED_TRAIT[which.max(PVALUE_MLOG)],
-      MAX_PVALUE_MLOG = max(PVALUE_MLOG),
-      .groups = "drop"
-    ) |>
-    group_by(SNPS) |>
-    summarise(
-      N_TRAITS = n(),
-      TRAITS = paste(unique(TRAIT), collapse = ";"),
-      .groups = "drop"
-    ) |>
-    filter(N_TRAITS > 1)
+    if (!is.null(traits)) {
+        trait_pattern <- paste(traits, collapse = "|")
+        gwas_data <- gwas_data |>
+            filter(str_detect(MAPPED_TRAIT, trait_pattern))
 
-  if (nrow(pleio_table) == 0) {
-    warning("No pleiotropic SNPs found with current parameters")
-    return(data.table::data.table())
-  }
+        if (nrow(gwas_data) == 0) {
+            stop("No data found for specified traits")
+        }
+    }
 
-  pleio_results <- pleio_table |>
-    left_join(gwas_data, by = "SNPS") |>
-    filter(PVALUE_MLOG >= -log10(pvalue_threshold))
+    pleio_table <- gwas_data |>
+        group_by(SNPS, MAPPED_TRAIT) |>
+        summarise(
+            TRAIT = MAPPED_TRAIT[which.max(PVALUE_MLOG)],
+            MAX_PVALUE_MLOG = max(PVALUE_MLOG),
+            .groups = "drop"
+        ) |>
+        group_by(SNPS) |>
+        summarise(
+            N_TRAITS = n(),
+            TRAITS = paste(unique(TRAIT), collapse = ";"),
+            .groups = "drop"
+        ) |>
+        filter(N_TRAITS > 1)
 
-  return(data.table::as.data.table(pleio_results))
+    if (nrow(pleio_table) == 0) {
+        warning("No pleiotropic SNPs found with current parameters")
+        return(data.table::data.table())
+    }
+
+    pleio_results <- pleio_table |>
+        left_join(gwas_data, by = "SNPS") |>
+        filter(PVALUE_MLOG >= -log10(pvalue_threshold))
+
+    return(data.table::as.data.table(pleio_results))
 }

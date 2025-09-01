@@ -8,20 +8,20 @@
 #' @return Logical. TRUE if validation passes.
 #' @keywords internal
 validate_gwas_data <- function(gwas_data, required_cols) {
-  if (!is.data.frame(gwas_data)) {
-    return(FALSE)
-  }
+    if (!is.data.frame(gwas_data)) {
+        return(FALSE)
+    }
 
-  if (nrow(gwas_data) == 0) {
-    return(FALSE)
-  }
+    if (nrow(gwas_data) == 0) {
+        return(FALSE)
+    }
 
-  missing_cols <- setdiff(required_cols, names(gwas_data))
-  if (length(missing_cols) > 0) {
-    return(FALSE)
-  }
+    missing_cols <- setdiff(required_cols, names(gwas_data))
+    if (length(missing_cols) > 0) {
+        return(FALSE)
+    }
 
-  return(TRUE)
+    return(TRUE)
 }
 
 #' Format P-values for Display
@@ -33,8 +33,8 @@ validate_gwas_data <- function(gwas_data, required_cols) {
 #' @return Character vector of formatted p-values.
 #' @keywords internal
 format_pvalues <- function(pvalue_mlog) {
-  pvalues <- 10^(-pvalue_mlog)
-  ifelse(pvalues < 1e-300, "< 1e-300",
-    formatC(pvalues, format = "e", digits = 2)
-  )
+    pvalues <- 10^(-pvalue_mlog)
+    ifelse(pvalues < 1e-300, "< 1e-300",
+        formatC(pvalues, format = "e", digits = 2)
+    )
 }

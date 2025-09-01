@@ -29,8 +29,8 @@ specific SNPs of interest.
 data(gwas_subset)
 pleio_results <- detect_pleiotropy(gwas_subset)
 if (nrow(pleio_results) > 0) {
-  p <- plot_pleiotropy_manhattan(pleio_results, highlight_snp = "rs814573")
-  print(p)
+    p <- plot_pleiotropy_manhattan(pleio_results, highlight_snp = "rs814573")
+    print(p)
 }
 
 }
