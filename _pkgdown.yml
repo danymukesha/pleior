@@ -1,4 +1,16 @@
 url: https://danymukesha.github.io/pleior/
+
+authors:
+    Dany Mukesha:
+        href: https://danymukesha.github.io/
+
 template:
-  bootstrap: 5
-  bootswatch: cerulean
+    bootstrap: 5
+    bootswatch: litera
+    light-switch: true
+    bslib:
+        primary: "#0054AD"
+        danger: "#A6081A"
+
+development:
+    mode: auto

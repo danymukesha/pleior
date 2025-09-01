@@ -7,22 +7,30 @@
 load_gwas_data(file_path, sep = "\\t", header = TRUE, quote = "")
 }
 \arguments{
-\item{file_path}{Character. Path to the GWAS summary statistics file (e.g., TSV, CSV).}
+\item{file_path}{Character. Path to the GWAS summary statistics file.}
 
-\item{sep}{Character. Separator used in the file (default: tab-separate).}
+\item{sep}{Character. Field separator (default: "\\t").}
 
-\item{header}{Logical. Whether the file has a header row (default: TRUE).}
+\item{header}{Logical. Whether file contains header row (default: TRUE).}
 
-\item{quote}{Character. Quote character used in the file (default: "").}
+\item{quote}{Character. Quote character (default: "").}
 }
 \value{
-A data.table containing the GWAS data.
+A data.table containing the GWAS summary statistics.
 }
 \description{
-Loads GWAS summary statistics from a file or URL, supporting various formats.
+Loads GWAS summary statistics from a file, supporting various formats.
+The function automatically detects common separators and handles
+standard GWAS file formats.
 }
 \examples{
-\dontrun{
-gwas_data <- load_gwas_data("gwas_associations.tsv")
+\donttest{
+# Load example data
+file_path <- system.file("extdata", "example_gwas.tsv", package = "pleior")
+if (file.exists(file_path)) {
+    gwas_data <- load_gwas_data(file_path)
+    head(gwas_data)
 }
+}
+
 }

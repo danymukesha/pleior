@@ -1,68 +1,114 @@
-#' Plot Manhattan Plot for Pleiotropic SNPs
+#' Create Manhattan Plot for Pleiotropic SNPs
 #'
-#' Creates a Manhattan plot highlighting pleiotropic SNPs across chromosomes.
+#' Generates a Manhattan plot highlighting pleiotropic SNPs across chromosomes.
+#' The plot shows the distribution of significant associations and can highlight
+#' specific SNPs of interest.
 #'
-#' @param pleio_data A data.table containing pleiotropy analysis results.
-#' @param highlight_snp Character. Optional SNP to highlight (default: NULL).
-#' @return A ggplot2 object.
+#' @param pleio_data A data.frame containing pleiotropy analysis results.
+#' @param highlight_snp Character. SNP identifier to highlight (default: NULL).
+#' @param title Character. Plot title (default: "Manhattan Plot of Pleiotropic SNPs").
+#'
+#' @return A ggplot2 object representing the Manhattan plot.
+#'
 #' @import ggplot2
-#' @importFrom dplyr ungroup mutate arrange filter group_by
+#' @importFrom dplyr ungroup mutate arrange filter group_by setdiff
+#'
 #' @examples
-#' \dontrun{
-#' gwas_data <- load_gwas_data("gwas_associations.tsv")
-#' gwas_clean <- preprocess_gwas(gwas_data)
-#' pleio_results <- detect_pleiotropy(gwas_clean)
-#' plot_pleiotropy_manhattan(pleio_results, highlight_snp = "rs814573")
+#' data(gwas_subset)
+#' pleio_results <- detect_pleiotropy(gwas_subset)
+#' if (nrow(pleio_results) > 0) {
+#'   p <- plot_pleiotropy_manhattan(pleio_results, highlight_snp = "rs814573")
+#'   print(p)
 #' }
+#'
 #' @export
-plot_pleiotropy_manhattan <- function(pleio_data, highlight_snp = NULL) {
-    if (!is.data.frame(pleio_data)) {
-        stop("Input must be a data.frame")
-    }
+plot_pleiotropy_manhattan <- function(pleio_data,
+                                      highlight_snp = NULL,
+                                      title = "Manhattan Plot of Pleiotropic SNPs") {
+  if (!is.data.frame(pleio_data)) {
+    stop("Input must be a data.frame or data.table")
+  }
 
-    required_cols <- c("SNPS", "CHR_ID", "CHR_POS", "PVALUE_MLOG")
-    missing_cols <- setdiff(required_cols, names(pleio_data))
-    if (length(missing_cols) > 0) {
-        stop("Required columns missing: ", paste(missing_cols, collapse = ", "))
-    }
+  required_cols <- c("SNPS", "CHR_ID", "CHR_POS", "PVALUE_MLOG")
+  missing_cols <- setdiff(required_cols, names(pleio_data))
+  if (length(missing_cols) > 0) {
+    stop("Required columns missing: ", paste(missing_cols, collapse = ", "))
+  }
 
-    plot_data <- pleio_data |>
-        mutate(CHR_POS = as.numeric(CHR_POS)) |>
-        group_by(CHR_ID) |>
-        arrange(CHR_POS) |>
-        mutate(CHR_CUMPOS = CHR_POS + cumsum(c(0, diff(CHR_POS, lag = 1, differences = 1))[1:n()])) |>
-        ungroup()
+  if (nrow(pleio_data) == 0) {
+    stop("Input data is empty")
+  }
 
-    axis_df <- plot_data |>
-        group_by(CHR_ID) |>
-        summarise(CENTER = mean(CHR_CUMPOS), .groups = "drop")
+  plot_data <- pleio_data |>
+    mutate(
+      CHR_ID = as.character(CHR_ID),
+      CHR_POS = as.numeric(CHR_POS),
+      CHR_NUM = as.numeric(ifelse(CHR_ID == "X", "23",
+        ifelse(CHR_ID == "Y", "24", CHR_ID)
+      ))
+    ) |>
+    filter(!is.na(CHR_NUM), !is.na(CHR_POS)) |>
+    arrange(CHR_NUM, CHR_POS)
 
-    max_p <- max(plot_data$PVALUE_MLOG) + 100
+  if (nrow(plot_data) == 0) {
+    stop("No valid chromosomal positions found")
+  }
 
-    p <- ggplot(plot_data, aes(x = CHR_CUMPOS, y = PVALUE_MLOG, color = as.factor(CHR_ID))) +
-        geom_point(alpha = 0.7, size = 2) +
-        scale_x_continuous(label = axis_df$CHR_ID, breaks = axis_df$CENTER) +
-        scale_y_continuous(expand = c(0, 0)) +
-        labs(x = "Chromosome", y = "-log10(P-value)", title = "Manhattan plot of pleiotropic SNPs") +
-        theme_minimal() +
-        ylim(0, max_p) +
-        theme(
-            legend.position = "none",
-            panel.grid.major.x = element_blank(),
-            panel.grid.minor = element_blank(),
-            axis.text.x = element_text(angle = 90, hjust = 1),
-            axis.ticks.x = element_blank(),
-            plot.title = element_text(hjust = 0.5)
-        )
+  chr_lengths <- plot_data |>
+    group_by(CHR_ID, CHR_NUM) |>
+    summarise(MAX_POS = max(CHR_POS), .groups = "drop") |>
+    arrange(CHR_NUM) |>
+    mutate(
+      CUMPOS_START = cumsum(c(0, MAX_POS[-n()])),
+      CUMPOS_END = cumsum(MAX_POS),
+      CENTER = CUMPOS_START + (MAX_POS / 2)
+    )
 
-    if (!is.null(highlight_snp)) {
-        highlight_data <- plot_data |>
-            filter(SNPS == highlight_snp)
+  plot_data <- plot_data |>
+    left_join(chr_lengths[, c("CHR_ID", "CUMPOS_START")], by = "CHR_ID") |>
+    mutate(PLOT_POS = CUMPOS_START + CHR_POS)
 
-        if (nrow(highlight_data) > 0) {
-            p <- p + geom_point(data = highlight_data, color = "red", size = 3)
-        }
-    }
+  colors <- rep(c("#1f77b4", "#ff7f0e"), length.out = nrow(chr_lengths))
+  names(colors) <- chr_lengths$CHR_ID
 
-    return(p)
+  p <- ggplot(plot_data, aes(
+    x = PLOT_POS, y = PVALUE_MLOG,
+    color = CHR_ID
+  )) +
+    geom_point(alpha = 0.7, size = 1.5) +
+    scale_color_manual(values = colors) +
+    scale_x_continuous(
+      labels = chr_lengths$CHR_ID,
+      breaks = chr_lengths$CENTER,
+      expand = c(0.01, 0)
+    ) +
+    scale_y_continuous(expand = c(0.02, 0)) +
+    labs(
+      x = "Chromosome",
+      y = expression(-log[10](P)),
+      title = title
+    ) +
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.text.x = element_text(size = 10),
+      plot.title = element_text(hjust = 0.5, size = 14)
+    )
+
+  if (!is.null(highlight_snp) && highlight_snp %in% plot_data$SNPS) {
+    highlight_data <- plot_data |>
+      filter(SNPS == highlight_snp)
+
+    p <- p +
+      geom_point(data = highlight_data, color = "red", size = 3, alpha = 0.8) +
+      geom_text(
+        data = highlight_data,
+        aes(label = SNPS),
+        vjust = -0.5, color = "red", size = 3
+      )
+  }
+
+  return(p)
 }

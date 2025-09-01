@@ -1,27 +1,41 @@
 Package: pleior
-Title: Pleiotropy analysis in genome-wide association studies (GWAS)
+Type: Package
+Title: Pleiotropy Analysis for GWAS Data
 Version: 0.0.1
 Authors@R: 
-    person("Dany", "Mukesha", , "danymukesha@gmail.com", 
-            role = c("aut", "cre"),
-           comment = c(ORCID = "0009-0001-9514-751X"))
-Description: Systematically identify and interpret pleiotropic genetic variants 
-    (SNPs associated with multiple traits) using GWAS data, with a focus 
-    on understanding shared biological mechanisms.
-Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
-Depends: 
-    R (>= 3.5)
-LazyData: true
-Suggests: 
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
-URL: https://danymukesha.github.io/pleior, https://github.com/danymukesha/pleior
+     person("Dany", "Mukesha", , "danymukesha@gmail.com", 
+        role = c("aut", "cre"), comment = c(ORCID = "0000-0000-0000-0000"))
+Description: Tool to identifying and analyze pleiotropic genetic variants 
+    in genome-wide association studies (GWAS). Pleiotropy occurs when 
+    a single genetic variant influences multiple traits, offering insights
+    into shared biological pathways and disease relationships. 
+    The package includes functions for data loading, preprocessing, 
+    pleiotropy detection, and visualization using Manhattan plots.
 License: MIT + file LICENSE
-BugReports: https://github.com/danymukesha/pleior/issues
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.2
+VignetteBuilder: knitr
+Depends: 
+    R (>= 4.3.0)
 Imports: 
-    ggplot2, 
-    dplyr,
-    stringr
+    data.table (>= 1.14.0),
+    dplyr (>= 1.1.0),
+    ggplot2 (>= 3.4.0),
+    stringr (>= 1.5.0)
+Suggests: 
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    BiocStyle,
+    covr
+BiocViews: 
+    GenomicVariation, 
+    GWAS, 
+    Genetics, 
+    Visualization, 
+    Software
+URL: https://github.com/danymukesha/pleior, 
+    https://danymukesha.github.io/pleior/
+BugReports: https://github.com/danymukesha/pleior/issues
+biocViews: GenomicVariation, GWAS, Genetics, Visualization, Software

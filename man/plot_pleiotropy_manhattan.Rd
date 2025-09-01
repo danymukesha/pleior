@@ -2,26 +2,35 @@
 % Please edit documentation in R/plot_pleiotropy_manhattan.R
 \name{plot_pleiotropy_manhattan}
 \alias{plot_pleiotropy_manhattan}
-\title{Plot Manhattan Plot for Pleiotropic SNPs}
+\title{Create Manhattan Plot for Pleiotropic SNPs}
 \usage{
-plot_pleiotropy_manhattan(pleio_data, highlight_snp = NULL)
+plot_pleiotropy_manhattan(
+  pleio_data,
+  highlight_snp = NULL,
+  title = "Manhattan Plot of Pleiotropic SNPs"
+)
 }
 \arguments{
-\item{pleio_data}{A data.table containing pleiotropy analysis results.}
+\item{pleio_data}{A data.frame containing pleiotropy analysis results.}
 
-\item{highlight_snp}{Character. Optional SNP to highlight (default: NULL).}
+\item{highlight_snp}{Character. SNP identifier to highlight (default: NULL).}
+
+\item{title}{Character. Plot title (default: "Manhattan Plot of Pleiotropic SNPs").}
 }
 \value{
-A ggplot2 object.
+A ggplot2 object representing the Manhattan plot.
 }
 \description{
-Creates a Manhattan plot highlighting pleiotropic SNPs across chromosomes.
+Generates a Manhattan plot highlighting pleiotropic SNPs across chromosomes.
+The plot shows the distribution of significant associations and can highlight
+specific SNPs of interest.
 }
 \examples{
-\dontrun{
-gwas_data <- load_gwas_data("gwas_associations.tsv")
-gwas_clean <- preprocess_gwas(gwas_data)
-pleio_results <- detect_pleiotropy(gwas_clean)
-plot_pleiotropy_manhattan(pleio_results, highlight_snp = "rs814573")
+data(gwas_subset)
+pleio_results <- detect_pleiotropy(gwas_subset)
+if (nrow(pleio_results) > 0) {
+  p <- plot_pleiotropy_manhattan(pleio_results, highlight_snp = "rs814573")
+  print(p)
 }
+
 }

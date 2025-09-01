@@ -11,21 +11,25 @@ preprocess_gwas(
 )
 }
 \arguments{
-\item{gwas_data}{A data.table containing GWAS summary statistics.}
+\item{gwas_data}{A data.frame containing GWAS summary statistics.}
 
-\item{pvalue_threshold}{Numeric. P-value threshold for filtering (default: 5e-8).}
+\item{pvalue_threshold}{Numeric. P-value threshold for filtering
+(default: 5e-8).}
 
-\item{columns}{Character vector. Columns to retain (default: key GWAS columns).}
+\item{columns}{Character vector. Columns to retain in output
+(default: key GWAS columns).}
 }
 \value{
-A filtered data.table.
+A filtered and cleaned data.table.
 }
 \description{
-Filters and cleans GWAS summary statistics for downstream analysis.
+Filters and cleans GWAS summary statistics for downstream pleiotropy analysis.
+Removes missing values, applies significance thresholds, and standardizes
+column names.
 }
 \examples{
-\dontrun{
-gwas_data <- load_gwas_data("gwas_associations.tsv")
-gwas_clean <- preprocess_gwas(gwas_data, pvalue_threshold = 5e-8)
-}
+data(gwas_subset)
+gwas_clean <- preprocess_gwas(gwas_subset, pvalue_threshold = 1e-5)
+head(gwas_clean)
+
 }

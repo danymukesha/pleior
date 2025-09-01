@@ -7,22 +7,30 @@
 detect_pleiotropy(gwas_data, traits = NULL, pvalue_threshold = 5e-08)
 }
 \arguments{
-\item{gwas_data}{A data.table containing preprocessed GWAS summary statistics.}
+\item{gwas_data}{A data.frame containing preprocessed GWAS summary statistics.}
 
-\item{traits}{Character vector. Traits to analyze for pleiotropy (default: NULL, uses all traits).}
+\item{traits}{Character vector. Specific traits to analyze for pleiotropy
+(default: NULL uses all traits).}
 
-\item{pvalue_threshold}{Numeric. P-value threshold for significance (default: 5e-8).}
+\item{pvalue_threshold}{Numeric. P-value threshold for significance
+(default: 5e-8).}
 }
 \value{
-A data.table with pleiotropic SNPs, their associated traits, and significance levels.
+A data.table with pleiotropic SNPs, their associated traits,
+  and significance levels.
 }
 \description{
-Identifies SNPs associated with multiple traits in GWAS data.
+Identifies SNPs associated with multiple traits in GWAS data. A SNP is
+considered pleiotropic if it shows significant associations with two or
+more distinct traits.
 }
 \examples{
-\dontrun{
-gwas_data <- load_gwas_data("gwas_associations.tsv")
-gwas_clean <- preprocess_gwas(gwas_data)
-pleio_results <- detect_pleiotropy(gwas_clean, traits = c("Alzheimer disease", "myocardial infarction"))
-}
+data(gwas_subset)
+pleio_results <- detect_pleiotropy(gwas_subset)
+head(pleio_results)
+
+# Analyze specific traits
+specific_traits <- c("Alzheimer disease", "myocardial infarction")
+pleio_specific <- detect_pleiotropy(gwas_subset, traits = specific_traits)
+
 }
