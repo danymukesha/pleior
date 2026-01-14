@@ -1,0 +1,306 @@
+---
+title: "Visualization for Pleiotropy Analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Visualization for Pleiotropy Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 6
+)
+```
+
+This vignette demonstrates the advanced visualization capabilities of *pleior* for analyzing and presenting pleiotropic genetic associations. These publication-ready visualizations are designed for scientific journals and provide explainable insights into shared genetic architecture.
+
+## Setup
+
+Load the package and example data:
+
+```{r setup}
+library(pleior)
+library(ggplot2)
+data(gwas_subset)
+```
+
+Preprocess and detect pleiotropic SNPs:
+
+```{r detect}
+gwas_clean <- preprocess_gwas(gwas_subset, pvalue_threshold = 5e-8)
+pleio_results <- detect_pleiotropy(gwas_clean)
+head(pleio_results)
+```
+
+## Publication-Ready Themes
+
+*pleior* includes publication-ready themes optimized for different journals:
+
+```{r themes}
+p <- ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point(aes(color = factor(cyl))) +
+  labs(title = "Example Plot with Publication Theme")
+# Default publication theme
+p1 <- p + theme_pleiotropy_publication()
+# Nature journal style
+p2 <- p + theme_pleiotropy_publication(journal_style = "nature")
+# Science journal style
+p3 <- p + theme_pleiotropy_publication(journal_style = "science")
+# Colorblind-friendly palettes
+colors <- get_pleiotropy_colors("okabe_ito", n = 5)
+print(colors)
+```
+
+## Network Graph Visualization
+
+Visualize connections between pleiotropic SNPs and their associated traits:
+
+```{r network, fig.width = 10, fig.height = 8}
+if (nrow(pleio_results) > 0) {
+  p_network <- plot_pleiotropy_network(
+    pleio_results,
+    top_n_snps = min(5, nrow(pleio_results)),
+    node_size_snp = 6,
+    node_size_trait = 10,
+    layout = "fr",
+    show_labels = TRUE,
+    color_palette = "okabe_ito"
+  ) + theme_pleiotropy_publication()
+  
+  print(p_network)
+}
+```
+
+## Heatmap Visualization
+
+Create a heatmap showing SNP-trait associations:
+
+```{r heatmap, fig.width = 10, fig.height = 8}
+if (nrow(pleio_results) > 0) {
+  p_heatmap <- plot_pleiotropy_heatmap(
+    pleio_results,
+    top_n_snps = min(5, nrow(pleio_results)),
+    top_n_traits = 4,
+    value_col = "PVALUE_MLOG",
+    show_dendrograms = FALSE,
+    color_palette = "bluered",
+    show_values = TRUE
+  )
+  
+  print(p_heatmap)
+}
+```
+
+## Multi-Trait Manhattan Plot
+
+Compare genome-wide associations across multiple traits:
+
+```{r multi_manhattan, fig.width = 12, fig.height = 10}
+if (nrow(pleio_results) > 0) {
+  p_multi <- plot_multi_trait_manhattan(
+    pleio_results,
+    max_traits = min(4, length(unique(pleio_results$MAPPED_TRAIT))),
+    significance_line = 5e-8,
+    suggestive_line = 1e-5,
+    point_size = 1.2,
+    alpha = 0.6,
+    ncol = 2
+  )
+  
+  print(p_multi)
+}
+```
+
+## Regional Association Plot
+
+Zoom in on specific genomic regions around pleiotropic SNPs:
+
+```{r regional, fig.width = 10, fig.height = 6}
+if (nrow(pleio_results) > 0 && "rs814573" %in% pleio_results$SNPS) {
+  p_regional <- plot_regional_association(
+    pleio_results,
+    target_snp = "rs814573",
+    window_size = 500000,
+    highlight_color = "#E31A1C"
+  )
+  
+  print(p_regional)
+}
+```
+
+## Trait Co-occurrence Network
+
+Visualize how traits share pleiotropic SNPs:
+
+```{r cooccurrence, fig.width = 10, fig.height = 8}
+if (nrow(pleio_results) > 0) {
+  p_cooccur <- plot_trait_cooccurrence_network(
+    pleio_results,
+    min_shared_snps = 1,
+    top_n_traits = min(5, length(unique(pleio_results$MAPPED_TRAIT))),
+    node_size = 8,
+    layout = "kk",
+    show_edge_labels = TRUE,
+    color_by = "n_snps"
+  )
+  
+  print(p_cooccur)
+}
+```
+
+## Effect Size Comparison
+
+Compare effect sizes across traits:
+
+```{r effect, fig.width = 10, fig.height = 8}
+if (nrow(pleio_results) > 0) {
+  p_effect <- plot_effect_size_comparison(
+    pleio_results,
+    top_n_snps = min(5, nrow(pleio_results)),
+    effect_col = "PVALUE_MLOG",
+    use_log_scale = FALSE,
+    color_by = "trait",
+    flip_coords = TRUE
+  )
+  
+  print(p_effect)
+}
+```
+
+## Venn Diagram
+
+Visualize SNP sharing between traits:
+
+```{r venn, fig.width = 10, fig.height = 8}
+if (nrow(pleio_results) > 0) {
+  traits <- unique(pleio_results$MAPPED_TRAIT)[1:min(3, length(unique(pleio_results$MAPPED_TRAIT)))]
+  
+  if (length(traits) >= 2) {
+    p_venn <- plot_venn_diagram(
+      pleio_results,
+      traits = traits[1:min(2, length(traits))],
+      title = "SNP Sharing Between Traits",
+      show_counts = TRUE,
+      show_percentages = TRUE,
+      color_palette = "okabe_ito",
+      alpha = 0.5
+    )
+    
+    print(p_venn)
+  }
+}
+```
+
+## Pleiotropy Significance Landscape
+
+Analyze the distribution of significance values:
+
+```{r landscape, fig.width = 10, fig.height = 6}
+if (nrow(pleio_results) > 0) {
+  p_landscape <- plot_pleiotropy_landscape(
+    pleio_results,
+    n_bins = 30,
+    show_median = TRUE,
+    show_mean = FALSE,
+    show_quantiles = TRUE,
+    color_palette = "viridis"
+  )
+  
+  print(p_landscape)
+}
+```
+
+## Combining Multiple Plots
+
+Create multi-panel figures for publications:
+
+```{r combine, fig.width = 14, fig.height = 10, eval=FALSE}
+if (nrow(pleio_results) > 0) {
+  p1 <- plot_pleiotropy_manhattan(
+    pleio_results,
+    title = "Manhattan Plot",
+  ) + theme_pleiotropy_publication()
+  
+  p2 <- plot_pleiotropy_heatmap(
+    pleio_results,
+    top_n_snps = min(5, nrow(pleio_results)),
+    top_n_traits = 4
+  )
+  
+  combined <- combine_publication_plots(
+    p1, p2,
+    ncol = 2,
+    labels = c("A", "B")
+  )
+  
+  print(combined)
+}
+```
+
+## Saving Publication-Ready Figures
+
+Export figures in high-resolution formats:
+
+```{r save, eval = FALSE}
+# Save as PDF (vector format for journals)
+save_publication_plot(
+  p_heatmap,
+  "figure1_heatmap.pdf",
+  width = 8,
+  height = 6
+)
+# Save as PNG (high-resolution raster)
+save_publication_plot(
+  p_network,
+  "figure2_network.png",
+  width = 10,
+  height = 8,
+  dpi = 300
+)
+# Save as TIFF (very high quality)
+save_publication_plot(
+  p_multi,
+  "figure3_manhattan.tiff",
+  width = 12,
+  height = 10,
+  dpi = 600
+)
+```
+
+## Customization Options
+
+All visualization functions offer extensive customization:
+
+- **Color palettes**: Use `get_pleiotropy_colors()` with options like "okabe_ito", "viridis", "plasma", "cividis"
+- **Journal styles**: Apply `theme_pleiotropy_publication()` with "nature", "science", "pnas", or "default"
+- **Layout options**: Network layouts include "fr", "kk", "dh", "grid", "circle"
+- **Highlighting**: Emphasize specific SNPs or traits
+- **Labels and annotations**: Add custom labels, titles, and annotations
+
+## Best Practices for Publications
+
+1. **Use vector formats** (PDF, SVG) when possible for journals
+2. **Set appropriate DPI** (300-600 for raster formats)
+3. **Use colorblind-friendly palettes** (e.g., "okabe_ito")
+4. **Maintain consistent styling** across all figures
+5. **Include clear legends and annotations**
+6. **Optimize figure dimensions** for journal specifications
+7. **Use high-contrast colors** for accessibility
+
+For more details, see the function documentation:
+
+- `?plot_pleiotropy_network`
+- `?plot_pleiotropy_heatmap`
+- `?plot_multi_trait_manhattan`
+- `?plot_regional_association`
+- `?plot_trait_cooccurrence_network`
+- `?plot_effect_size_comparison`
+- `?plot_venn_diagram`
+- `?plot_pleiotropy_landscape`
+- `?theme_pleiotropy_publication`
+- `?save_publication_plot`
+- `?combine_publication_plots`

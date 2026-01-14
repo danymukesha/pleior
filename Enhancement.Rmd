@@ -1,0 +1,422 @@
+# Pleiotropy Analysis Package - Scientific Publication Enhancements
+
+## Summary of Improvements
+
+This document summarizes the comprehensive enhancements made to the **pleior** package for scientific publication, including new complex and explainable visualizations.
+
+---
+
+## New Visualization Functions
+
+### 1. Network Graph Visualization (`plot_pleiotropy_network`)
+**Purpose**: Visualize connections between pleiotropic SNPs and their associated traits.
+
+**Features**:
+- Bipartite network showing SNP-trait relationships
+- Configurable node sizes based on number of associations
+- Multiple layout algorithms (Fruchterman-Reingold, Kamada-Kawai, etc.)
+- Interactive labels with ggrepel
+- Colorblind-friendly palettes
+
+**Usage**:
+```r
+plot_pleiotropy_network(pleio_data, top_n_snps = 10, layout = "fr")
+```
+
+**File**: `R/plot_network.R`
+
+---
+
+### 2. Trait Co-occurrence Network (`plot_trait_cooccurrence_network`)
+**Purpose**: Show how often pairs of traits share pleiotropic SNPs.
+
+**Features**:
+- Network visualization of trait co-occurrence
+- Edge weights indicate number of shared SNPs
+- Configurable filtering thresholds
+- Multiple color schemes (by node degree or SNP count)
+
+**Usage**:
+```r
+plot_trait_cooccurrence_network(pleio_data, top_n_traits = 15)
+```
+
+**File**: `R/plot_network.R`
+
+---
+
+### 3. Heatmap Visualization (`plot_pleiotropy_heatmap`)
+**Purpose**: Create publication-ready heatmaps showing SNP-trait associations.
+
+**Features**:
+- -log10(p-value) as heatmap values
+- Configurable clustering and dendrograms
+- Multiple color palettes (blue-red, viridis, plasma)
+- Optional value display in cells
+- Scaling options (none, row, column)
+
+**Usage**:
+```r
+plot_pleiotropy_heatmap(pleio_data, top_n_snps = 20, top_n_traits = 10)
+```
+
+**File**: `R/plot_heatmap.R`
+
+---
+
+### 4. Regional Association Plot (`plot_regional_association`)
+**Purpose**: Zoom in on genomic regions around specific pleiotropic SNPs.
+
+**Features**:
+- Detailed view of specified genomic window
+- Highlight target SNP with custom color
+- Optional gene annotation overlay
+- Configurable window sizes
+
+**Usage**:
+```r
+plot_regional_association(pleio_data, target_snp = "rs814573", window_size = 500000)
+```
+
+**File**: `R/plot_heatmap.R`
+
+---
+
+### 5. Multi-Trait Manhattan Plot (`plot_multi_trait_manhattan`)
+**Purpose**: Compare genome-wide associations across multiple traits simultaneously.
+
+**Features**:
+- Faceted Manhattan plots for each trait
+- Significance and suggestive threshold lines
+- Highlight SNPs across all traits
+- Customizable point sizes and transparency
+
+**Usage**:
+```r
+plot_multi_trait_manhattan(pleio_data, max_traits = 6, ncol = 2)
+```
+
+**File**: `R/plot_multi_trait.R`
+
+---
+
+### 6. Effect Size Comparison (`plot_effect_size_comparison`)
+**Purpose**: Compare effect sizes across traits for pleiotropic SNPs.
+
+**Features**:
+- Bar charts showing effect sizes
+- Optional error bars
+- Color by SNP, trait, or chromosome
+- Horizontal or vertical orientation
+- Log-scale support
+
+**Usage**:
+```r
+plot_effect_size_comparison(pleio_data, top_n_snps = 15, color_by = "trait")
+```
+
+**File**: `R/plot_multi_trait.R`
+
+---
+
+### 7. Venn Diagram (`plot_venn_diagram`)
+**Purpose**: Visualize SNP sharing between 2-4 traits.
+
+**Features**:
+- Support for 2, 3, or 4-way Venn diagrams
+- Display counts and/or percentages
+- Multiple color palettes
+- Adjustable transparency
+
+**Usage**:
+```r
+plot_venn_diagram(pleio_data, traits = c("trait1", "trait2", "trait3"))
+```
+
+**File**: `R/plot_venn.R`
+
+---
+
+### 8. Pleiotropy Significance Landscape (`plot_pleiotropy_landscape`)
+**Purpose**: Analyze distribution of significance values across all pleiotropic associations.
+
+**Features**:
+- Histogram with density overlay
+- Median and mean indicators
+- Quantile shading (25th-75th percentiles)
+- Configurable bin count
+
+**Usage**:
+```r
+plot_pleiotropy_landscape(pleio_data, n_bins = 30)
+```
+
+**File**: `R/plot_venn.R`
+
+---
+
+## Publication-Ready Themes
+
+### Theme Functions
+
+#### `theme_pleiotropy_publication()`
+Creates publication-ready ggplot2 themes optimized for scientific journals.
+
+**Features**:
+- Journal-specific styles: "nature", "science", "pnas", "default"
+- Consistent typography and spacing
+- Publication-grade panel borders and grids
+- Customizable legend positions
+
+**Usage**:
+```r
+ggplot(data, aes(x, y)) + 
+  geom_point() + 
+  theme_pleiotropy_publication(journal_style = "nature")
+```
+
+#### `get_pleiotropy_colors()`
+Provides colorblind-friendly color palettes.
+
+**Features**:
+- "okabe_ito": Okabe-Ito colorblind-friendly palette (10 colors)
+- "viridis": Viridis color scale
+- "plasma": Plasma color scale
+- "cividis": Cividis color scale (colorblind-friendly)
+- "blue_red": Blue-white-red diverging palette
+- "default": Default ggplot2 colors
+
+**Usage**:
+```r
+colors <- get_pleiotropy_colors("okabe_ito", n = 5)
+```
+
+#### `save_publication_plot()`
+Saves plots in publication-ready formats.
+
+**Features**:
+- Supports PDF, PNG, TIFF, SVG, EPS formats
+- Configurable dimensions and DPI (default: 300)
+- Automatic format detection from filename
+
+**Usage**:
+```r
+save_publication_plot(p, "figure1.pdf", width = 7, height = 5, dpi = 300)
+```
+
+#### `combine_publication_plots()`
+Combines multiple plots into multi-panel figures.
+
+**Features**:
+- Flexible grid layouts
+- Panel labeling (A, B, C, etc.)
+- Consistent theming across panels
+
+**Usage**:
+```r
+combine_publication_plots(p1, p2, p3, ncol = 2, labels = c("A", "B", "C"))
+```
+
+**File**: `R/theme_publication.R`
+
+---
+
+## New Dependencies Added
+
+Updated `DESCRIPTION` file to include:
+- `ggraph` (≥ 2.1.0): Network graph visualization
+- `igraph` (≥ 1.3.0): Graph data structures
+- `pheatmap` (≥ 1.0.12): Heatmap visualization
+- `scales` (≥ 1.2.0): Color scales
+- `patchwork` (≥ 1.1.0): Plot composition
+- `ComplexHeatmap`: Advanced heatmap functionality
+- `ggrepel` (≥ 0.9.0): Repulsive text labels
+
+---
+
+## Updated NAMESPACE
+
+Added 15 new exported functions:
+1. `theme_pleiotropy_publication()`
+2. `get_pleiotropy_colors()`
+3. `save_publication_plot()`
+4. `combine_publication_plots()`
+5. `plot_pleiotropy_network()`
+6. `plot_trait_cooccurrence_network()`
+7. `plot_pleiotropy_heatmap()`
+8. `plot_regional_association()`
+9. `plot_multi_trait_manhattan()`
+10. `plot_effect_size_comparison()`
+11. `plot_venn_diagram()`
+12. `plot_pleiotropy_landscape()`
+
+---
+
+## New Vignette
+
+Created comprehensive documentation: `vignettes/advanced_visualization.Rmd`
+
+**Contents**:
+- Setup and data loading
+- Theme customization examples
+- All visualization functions with code examples
+- Multi-panel figure composition
+- Publication-ready figure export
+- Best practices for scientific publications
+- Customization options
+
+---
+
+## Test Coverage
+
+Added 4 new test files with comprehensive unit tests:
+1. `tests/testthat/test-theme_publication.R`: Theme and color functions
+2. `tests/testthat/test-plot_network.R`: Network visualizations
+3. `tests/testthat/test-plot_heatmap.R`: Heatmap and regional plots
+4. `tests/testthat/test-plot_multi_trait.R`: Multi-trait and effect size plots
+5. `tests/testthat/test-plot_venn.R`: Venn diagram and landscape plots
+
+**Test Coverage**:
+- Input validation for all functions
+- Output verification (ggplot objects)
+- Edge case handling (empty data, missing columns)
+- Parameter validation
+
+---
+
+## Key Features for Scientific Publications
+
+### 1. Explainability
+- **Network graphs**: Clearly show SNP-trait relationships
+- **Heatmaps**: Visualize patterns of associations
+- **Venn diagrams**: Show overlap between traits
+- **Regional plots**: Zoom in on specific loci
+
+### 2. Publication Quality
+- **High-DPI export**: 300-600 DPI for journals
+- **Vector formats**: PDF, SVG for crisp printing
+- **Journal-specific themes**: Nature, Science, PNAS styles
+- **Colorblind-friendly palettes**: Accessibility compliance
+
+### 3. Flexibility
+- **Customizable layouts**: Grid, facet, circular
+- **Multiple color schemes**: Diverging, sequential, qualitative
+- **Adjustable parameters**: Sizes, transparency, fonts
+- **Multi-panel figures**: Easy composition
+
+### 4. Reproducibility
+- **Consistent defaults**: Reproducible visualizations
+- **Versioned dependencies**: Stable API
+- **Comprehensive tests**: Verified functionality
+- **Clear documentation**: Usage examples
+
+---
+
+## Usage Examples
+
+### Basic Workflow
+
+```r
+# Load package and data
+library(pleior)
+data(gwas_subset)
+
+# Preprocess and detect pleiotropy
+gwas_clean <- preprocess_gwas(gwas_subset, pvalue_threshold = 5e-8)
+pleio_results <- detect_pleiotropy(gwas_clean)
+
+# Create visualizations
+p_network <- plot_pleiotropy_network(pleio_results, top_n_snps = 10)
+p_heatmap <- plot_pleiotropy_heatmap(pleio_results, top_n_snps = 15)
+p_venn <- plot_venn_diagram(pleio_results, traits = c("trait1", "trait2"))
+
+# Save for publication
+save_publication_plot(p_heatmap, "figure1.pdf", width = 8, height = 6)
+```
+
+### Multi-Panel Figure
+
+```r
+# Create individual plots
+p1 <- plot_pleiotropy_manhattan(pleio_results)
+p2 <- plot_pleiotropy_network(pleio_results, top_n_snps = 5)
+p3 <- plot_pleiotropy_heatmap(pleio_results, top_n_snps = 8)
+
+# Combine into single figure
+combined <- combine_publication_plots(p1, p2, p3, ncol = 2, labels = c("A", "B", "C"))
+
+# Save
+save_publication_plot(combined, "figure_multi.pdf", width = 14, height = 10)
+```
+
+---
+
+## File Structure
+
+```
+pleior/
+├── R/
+│   ├── theme_publication.R          # Publication themes
+│   ├── plot_network.R              # Network visualizations
+│   ├── plot_heatmap.R              # Heatmap and regional plots
+│   ├── plot_multi_trait.R          # Multi-trait Manhattan
+│   ├── plot_venn.R                # Venn diagram and landscape
+│   ├── plot_pleiotropy_manhattan.R
+│   ├── detect_pleiotropy.R
+│   ├── load_gwas.R
+│   ├── preprocess_gwas.R
+│   ├── data.R
+│   ├── pleior-package.R
+│   └── utils.R
+├── vignettes/
+│   ├── pleior.Rmd
+│   └── advanced_visualization.Rmd  # New comprehensive vignette
+├── tests/
+│   └── testthat/
+│       ├── test-theme_publication.R
+│       ├── test-plot_network.R
+│       ├── test-plot_heatmap.R
+│       ├── test-plot_multi_trait.R
+│       ├── test-plot_venn.R
+│       ├── test-plot_pleiotropy_manhattan.R
+│       ├── test-detect_pleiotropy.R
+│       ├── test-load_gwas_data.R
+│       ├── test-preprocess_gwas.R
+│       └── test-utils.R
+├── DESCRIPTION                    # Updated with new dependencies
+├── NAMESPACE                      # Updated with new exports
+└── README.md
+```
+
+---
+
+## Future Enhancements
+
+Potential additions for future versions:
+1. Interactive visualizations using plotly
+2. Circos plots for chromosomal relationships
+3. Pathway enrichment visualization
+4. Dynamic network exploration
+5. Export to Bioconductor image formats
+6. Integration with annotation databases
+7. Time-lapse visualization of trait evolution
+8. 3D visualization of multi-trait relationships
+
+---
+
+## Citation
+
+If you use these visualizations in your research, please cite:
+
+```
+Mukesha D. pleior: Pleiotropy Analysis for GWAS Data. R package version 0.0.1.
+https://github.com/danymukesha/pleior
+```
+
+---
+
+## Contact
+
+For questions, issues, or suggestions:
+- GitHub: https://github.com/danymukesha/pleior/issues
+- Email: danymukesha@gmail.com
