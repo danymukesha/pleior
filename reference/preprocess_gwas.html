@@ -3,7 +3,7 @@
 Removes missing values, applies significance thresholds, and standardizes
 column names."><meta property="og:description" content="Filters and cleans GWAS summary statistics for downstream pleiotropy analysis.
 Removes missing values, applies significance thresholds, and standardizes
-column names."></head><body>
+column names."><meta property="og:image" content="https://danymukesha.github.io/pleior/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -11,7 +11,7 @@ column names."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">pleior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,8 +41,7 @@ column names."></head><body>
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Preprocess GWAS Data</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Preprocess GWAS Data</h1>
       <small class="dont-index">Source: <a href="https://github.com/danymukesha/pleior/blob/main/R/preprocess_gwas.R" class="external-link"><code>R/preprocess_gwas.R</code></a></small>
       <div class="d-none name"><code>preprocess_gwas.Rd</code></div>
     </div>
@@ -90,14 +89,14 @@ column names.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gwas_subset</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">gwas_clean</span> <span class="op">&lt;-</span> <span class="fu">preprocess_gwas</span><span class="op">(</span><span class="va">gwas_subset</span>, pvalue_threshold <span class="op">=</span> <span class="fl">1e-5</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gwas_clean</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         SNPS          MAPPED_TRAIT PVALUE_MLOG CHR_ID   CHR_POS</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       &lt;char&gt;                &lt;char&gt;       &lt;num&gt; &lt;char&gt;    &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  rs814573     Alzheimer disease   672.69900     19  44908684</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  rs814573 myocardial infarction    15.00000     19  44908684</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:    rs7412     Alzheimer disease   122.39790     19  44919689</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:    rs7412       LDL cholesterol  9629.00000     19  44919689</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: rs2817462    memory performance     6.30103      6 156588550</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: rs2817462  tyrosine measurement     9.69897      6 156588550</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          SNPS    MAPPED_TRAIT PVALUE_MLOG CHR_ID   CHR_POS</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;char&gt;          &lt;char&gt;       &lt;num&gt; &lt;char&gt;    &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  rs2820292 body mass index    10.09691      1 201815159</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  rs6725549 body mass index    74.00000      2    630323</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: rs10182181 body mass index    29.69897      2  24927427</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  rs3739081 body mass index     8.69897      2  26732753</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: rs13011109 body mass index    14.00000      2  58630284</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:  rs1016287 body mass index    12.39794      2  59078490</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

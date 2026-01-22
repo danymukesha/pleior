@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Introduction • pleior</title>
+<title>Introduction to pleior • pleior</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Introduction">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to pleior">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pleior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,8 +63,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Introduction</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Introduction to pleior</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/danymukesha/pleior/blob/main/vignettes/pleior.Rmd" class="external-link"><code>vignettes/pleior.Rmd</code></a></small>
@@ -72,86 +71,322 @@
     </div>
 
     
+        <div class="abstract">
+      <p class="abstract">Abstract</p>
+      <p>Pleiotropy occurs when a single genetic variant influences
+      multiple traits, offering insights into shared biological pathways
+      and disease relationships. The package provides tools for
+      analyzing pleiotropy in genome-wide association studies
+      (GWAS).</p>
+    </div>
     
-<p><em>pleior</em> is an R package for analyzing pleiotropy in
-genome-wide association studies (GWAS).</p>
-<p>Here, we provide a basic workflow for using <em>pleior</em> and how
-to use its core functions to load, preprocess, and analyze GWAS data for
-pleiotropic effects.</p>
+<p>This vignette demonstrates a typical workflow using GWAS catalog data
+to identify and visualize pleiotropic genetic variants.</p>
 <div class="section level2">
-<h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
+<h2 id="what-is-pleiotropy">What is Pleiotropy?<a class="anchor" aria-label="anchor" href="#what-is-pleiotropy"></a>
 </h2>
-<p>First, load the <em>pleior</em> package and the example dataset.</p>
+<p>Pleiotropy is a fundamental concept in genetics where a single gene
+or genetic variant affects multiple phenotypic traits. In GWAS
+studies:</p>
+<ul>
+<li>
+<strong>Genetic Pleiotropy</strong>: One variant associated with
+multiple traits</li>
+<li>
+<strong>Biological Significance</strong>: Reveals shared pathways
+and mechanisms</li>
+<li>
+<strong>Clinical Relevance</strong>: Explains disease comorbidity
+and drug targets</li>
+</ul>
+<p>Understanding pleiotropy helps the users to:</p>
+<ul>
+<li>Identify shared genetic architecture across diseases</li>
+<li>Discover novel therapeutic targets</li>
+<li>Explain why certain diseases co-occur</li>
+<li>Prioritize variants for functional studies</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danymukesha/pleior" class="external-link">pleior</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gwas_subset</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gwas_subset</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         SNPS          MAPPED_TRAIT PVALUE_MLOG CHR_ID   CHR_POS</span></span>
-<span><span class="co">#&gt;       &lt;char&gt;                &lt;char&gt;       &lt;num&gt; &lt;char&gt;    &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:  rs814573     Alzheimer disease   672.69900     19  44908684</span></span>
-<span><span class="co">#&gt; 2:  rs814573 myocardial infarction    15.00000     19  44908684</span></span>
-<span><span class="co">#&gt; 3:    rs7412     Alzheimer disease   122.39790     19  44919689</span></span>
-<span><span class="co">#&gt; 4:    rs7412       LDL cholesterol  9629.00000     19  44919689</span></span>
-<span><span class="co">#&gt; 5: rs2817462    memory performance     6.30103      6 156588550</span></span>
-<span><span class="co">#&gt; 6: rs2817462  tyrosine measurement     9.69897      6 156588550</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Install from GitHub</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://devtools.r-lib.org/" class="external-link">"devtools"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"danymukesha/pleior"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Load the package</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danymukesha/pleior" class="external-link">pleior</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="workflow">Workflow<a class="anchor" aria-label="anchor" href="#workflow"></a>
+<h2 id="quick-start-with-real-gwas-data">Quick Start with Real GWAS Data<a class="anchor" aria-label="anchor" href="#quick-start-with-real-gwas-data"></a>
+</h2>
+<p>The package includes a curated subset of GWAS catalog data containing
+~2,500 significant associations across 15 diverse traits.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Load the example dataset</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gwas_subset</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Explore the data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gwas_subset</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Summary statistics</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Dataset contains:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">gwas_subset</span><span class="op">)</span>, <span class="st">"GWAS associations\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Unique SNPs:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">gwas_subset</span><span class="op">$</span><span class="va">SNPS</span><span class="op">)</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Unique traits:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">gwas_subset</span><span class="op">$</span><span class="va">MAPPED_TRAIT</span><span class="op">)</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="complete-pleiotropy-analysis-workflow">Complete Pleiotropy Analysis Workflow<a class="anchor" aria-label="anchor" href="#complete-pleiotropy-analysis-workflow"></a>
 </h2>
 <div class="section level3">
-<h3 id="step-1-load-gwas-data">Step 1: Load GWAS data<a class="anchor" aria-label="anchor" href="#step-1-load-gwas-data"></a>
+<h3 id="step-1-preprocess-gwas-data">Step 1: Preprocess GWAS Data<a class="anchor" aria-label="anchor" href="#step-1-preprocess-gwas-data"></a>
 </h3>
-<p>Although we use the example dataset here, you can load your own GWAS
-summary statistics.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gwas_data</span> <span class="op">&lt;-</span> <span class="va">gwas_subset</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="step-2-preprocess-gwas-data">Step 2: Preprocess GWAS data<a class="anchor" aria-label="anchor" href="#step-2-preprocess-gwas-data"></a>
-</h3>
-<p>Filter the data to retain significant associations.</p>
+<p>Clean the data and filter for genome-wide significance:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gwas_clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/preprocess_gwas.html">preprocess_gwas</a></span><span class="op">(</span><span class="va">gwas_data</span>, pvalue_threshold <span class="op">=</span> <span class="fl">5e-8</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gwas_clean</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          SNPS          MAPPED_TRAIT PVALUE_MLOG CHR_ID   CHR_POS</span></span>
-<span><span class="co">#&gt;        &lt;char&gt;                &lt;char&gt;       &lt;num&gt; &lt;char&gt;    &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:   rs814573     Alzheimer disease   672.69900     19  44908684</span></span>
-<span><span class="co">#&gt; 2:   rs814573 myocardial infarction    15.00000     19  44908684</span></span>
-<span><span class="co">#&gt; 3:     rs7412     Alzheimer disease   122.39790     19  44919689</span></span>
-<span><span class="co">#&gt; 4:     rs7412       LDL cholesterol  9629.00000     19  44919689</span></span>
-<span><span class="co">#&gt; 5:  rs2817462  tyrosine measurement     9.69897      6 156588550</span></span>
-<span><span class="co">#&gt; 6: rs10182181       body mass index    29.69897      2  24927427</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Filter for genome-wide significant associations (p &lt; 5e-8)</span></span>
+<span><span class="va">gwas_clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/preprocess_gwas.html">preprocess_gwas</a></span><span class="op">(</span></span>
+<span>    <span class="va">gwas_subset</span>,</span>
+<span>    pvalue_threshold <span class="op">=</span> <span class="fl">5e-8</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"After filtering:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">gwas_clean</span><span class="op">)</span>, <span class="st">"significant associations\n"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="step-3-detect-pleiotropic-snps">Step 3: Detect pleiotropic SNPs<a class="anchor" aria-label="anchor" href="#step-3-detect-pleiotropic-snps"></a>
+<h3 id="step-2-detect-pleiotropic-snps">Step 2: Detect Pleiotropic SNPs<a class="anchor" aria-label="anchor" href="#step-2-detect-pleiotropic-snps"></a>
 </h3>
-<p>Identify SNPs associated with multiple traits.</p>
+<p>Identify SNPs associated with multiple traits:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pleio_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detect_pleiotropy.html">detect_pleiotropy</a></span><span class="op">(</span><span class="va">gwas_clean</span>, traits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alzheimer disease"</span>, <span class="st">"myocardial infarction"</span>, <span class="st">"LDL cholesterol"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        SNPS N_TRAITS                                  TRAITS</span></span>
-<span><span class="co">#&gt;      &lt;char&gt;    &lt;int&gt;                                  &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:   rs7412        2       Alzheimer disease;LDL cholesterol</span></span>
-<span><span class="co">#&gt; 2:   rs7412        2       Alzheimer disease;LDL cholesterol</span></span>
-<span><span class="co">#&gt; 3: rs814573        2 Alzheimer disease;myocardial infarction</span></span>
-<span><span class="co">#&gt; 4: rs814573        2 Alzheimer disease;myocardial infarction</span></span>
-<span><span class="co">#&gt;             MAPPED_TRAIT PVALUE_MLOG CHR_ID  CHR_POS</span></span>
-<span><span class="co">#&gt;                   &lt;char&gt;       &lt;num&gt; &lt;char&gt;   &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:     Alzheimer disease    122.3979     19 44919689</span></span>
-<span><span class="co">#&gt; 2:       LDL cholesterol   9629.0000     19 44919689</span></span>
-<span><span class="co">#&gt; 3:     Alzheimer disease    672.6990     19 44908684</span></span>
-<span><span class="co">#&gt; 4: myocardial infarction     15.0000     19 44908684</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Detect pleiotropy across all traits</span></span>
+<span><span class="va">pleio_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detect_pleiotropy.html">detect_pleiotropy</a></span><span class="op">(</span><span class="va">gwas_clean</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Found"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">)</span>, <span class="st">"pleiotropic SNPs\n"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Examine the top pleiotropic SNPs</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pleio_results</span>, <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="step-4-visualize-results">Step 4: Visualize results<a class="anchor" aria-label="anchor" href="#step-4-visualize-results"></a>
+<h3 id="step-3-analyze-pleiotropic-snps">Step 3: Analyze Pleiotropic SNPs<a class="anchor" aria-label="anchor" href="#step-3-analyze-pleiotropic-snps"></a>
 </h3>
-<p>Create a Manhattan plot to visualize pleiotropic SNPs.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pleiotropy_manhattan.html">plot_pleiotropy_manhattan</a></span><span class="op">(</span><span class="va">pleio_results</span>, highlight_snp <span class="op">=</span> <span class="st">"rs814573"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pleior_files/figure-html/plot-1.png" class="r-plt" alt="" width="672"></p>
-<p>For more advanced features, such as functional annotation or
-interactive visualization, refer to the package documentation.</p>
+<code class="sourceCode R"><span><span class="co"># Summary statistics</span></span>
+<span><span class="va">snp_summary</span> <span class="op">&lt;-</span> <span class="va">pleio_results</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">group_by</span><span class="op">(</span><span class="va">SNPS</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">summarise</span><span class="op">(</span></span>
+<span>        n_traits <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>        min_pvalue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">PVALUE_MLOG</span><span class="op">)</span>,</span>
+<span>        .groups <span class="op">=</span> <span class="st">"drop"</span></span>
+<span>    <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">n_traits</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">snp_summary</span><span class="op">)</span></span></code></pre></div>
 </div>
+<div class="section level3">
+<h3 id="step-4-visualize-results">Step 4: Visualize Results<a class="anchor" aria-label="anchor" href="#step-4-visualize-results"></a>
+</h3>
+<div class="section level4">
+<h4 id="manhattan-plot">Manhattan Plot<a class="anchor" aria-label="anchor" href="#manhattan-plot"></a>
+</h4>
+<p>Create a Manhattan plot highlighting pleiotropic SNPs:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Plot with top pleiotropic SNP highlighted</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">top_snp</span> <span class="op">&lt;-</span> <span class="va">snp_summary</span><span class="op">$</span><span class="va">SNPS</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span></span>
+<span>    <span class="va">p_manhattan</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_pleiotropy_manhattan.html">plot_pleiotropy_manhattan</a></span><span class="op">(</span></span>
+<span>        <span class="va">pleio_results</span>,</span>
+<span>        highlight_snp <span class="op">=</span> <span class="va">top_snp</span>,</span>
+<span>        title <span class="op">=</span> <span class="st">"Pleiotropic SNPs Across Genome"</span></span>
+<span>    <span class="op">)</span></span>
+<span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_manhattan</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="trait-distribution">Trait Distribution<a class="anchor" aria-label="anchor" href="#trait-distribution"></a>
+</h4>
+<p>See how many SNPs are associated with each trait:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trait_counts</span> <span class="op">&lt;-</span> <span class="va">pleio_results</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">count</span><span class="op">(</span><span class="va">MAPPED_TRAIT</span>, sort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Simple bar plot</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p_traits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">trait_counts</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">MAPPED_TRAIT</span>, <span class="va">n</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"steelblue"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>        x <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>        y <span class="op">=</span> <span class="st">"Number of Pleiotropic SNPs"</span>,</span>
+<span>        title <span class="op">=</span> <span class="st">"Pleiotropic SNPs by Trait"</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_traits</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="pleiotropy-spectrum">Pleiotropy Spectrum<a class="anchor" aria-label="anchor" href="#pleiotropy-spectrum"></a>
+</h4>
+<p>Visualize the distribution of number of traits per SNP:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">snp_trait_dist</span> <span class="op">&lt;-</span> <span class="va">pleio_results</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">group_by</span><span class="op">(</span><span class="va">SNPS</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">summarise</span><span class="op">(</span>n_traits <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p_spectrum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">snp_trait_dist</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">n_traits</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span></span>
+<span>        binwidth <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>        fill <span class="op">=</span> <span class="st">"steelblue"</span>,</span>
+<span>        color <span class="op">=</span> <span class="st">"white"</span>,</span>
+<span>        alpha <span class="op">=</span> <span class="fl">0.8</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>        x <span class="op">=</span> <span class="st">"Number of Traits per SNP"</span>,</span>
+<span>        y <span class="op">=</span> <span class="st">"Count"</span>,</span>
+<span>        title <span class="op">=</span> <span class="st">"Distribution of Pleiotropy"</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_spectrum</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="advanced-focus-on-specific-traits">Advanced: Focus on Specific Traits<a class="anchor" aria-label="anchor" href="#advanced-focus-on-specific-traits"></a>
+</h2>
+<p>You can analyze pleiotropy between specific traits of interest:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Define traits of interest</span></span>
+<span><span class="va">target_traits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Alzheimer's disease"</span>,</span>
+<span>    <span class="st">"Type 2 diabetes"</span>,</span>
+<span>    <span class="st">"Coronary artery disease"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Filter for these traits</span></span>
+<span><span class="va">gwas_target</span> <span class="op">&lt;-</span> <span class="va">gwas_clean</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">MAPPED_TRAIT</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">target_traits</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Detect pleiotropy among target traits</span></span>
+<span><span class="va">pleio_target</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detect_pleiotropy.html">detect_pleiotropy</a></span><span class="op">(</span></span>
+<span>    <span class="va">gwas_target</span>,</span>
+<span>    traits <span class="op">=</span> <span class="va">target_traits</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Pleiotropy between"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">target_traits</span><span class="op">)</span>, <span class="st">"target traits:\n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">pleio_target</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="interpreting-results">Interpreting Results<a class="anchor" aria-label="anchor" href="#interpreting-results"></a>
+</h2>
+<div class="section level3">
+<h3 id="what-makes-a-snp-pleiotropic">What Makes a SNP “Pleiotropic”?<a class="anchor" aria-label="anchor" href="#what-makes-a-snp-pleiotropic"></a>
+</h3>
+<p>A SNP is considered pleiotropic if it shows significant associations
+with <strong>two or more distinct traits</strong> in our dataset. The
+package identifies:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>SNP Identifier</strong>: The variant name (e.g.,
+rs814573)</li>
+<li>
+<strong>Associated Traits</strong>: Which traits the SNP
+influences</li>
+<li>
+<strong>Significance Level</strong>: The strongest association
+(-log10 p-value)</li>
+<li>
+<strong>Genomic Location</strong>: Chromosome and position</li>
+</ol>
+</div>
+<div class="section level3">
+<h3 id="example-interpretation">Example Interpretation<a class="anchor" aria-label="anchor" href="#example-interpretation"></a>
+</h3>
+<p>Consider a SNP like <code>rs814573</code>:</p>
+<ul>
+<li>
+<strong>Associated with</strong>: Alzheimer’s disease, myocardial
+infarction, LDL cholesterol</li>
+<li>
+<strong>Significance</strong>: p &lt; 5e-8 for all traits</li>
+<li>
+<strong>Implication</strong>: This variant affects pathways related
+to lipid metabolism and cardiovascular health</li>
+<li>
+<strong>Research Direction</strong>: Study shared biological
+mechanisms between these diseases</li>
+</ul>
+</div>
+</div>
+<div class="section level2">
+<h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+</h2>
+<p>After identifying pleiotropic SNPs:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Functional Annotation</strong>: Map SNPs to genes and
+pathways</li>
+<li>
+<strong>Literature Review</strong>: Investigate known
+mechanisms</li>
+<li>
+<strong>Experimental Validation</strong>: Test in model systems</li>
+<li>
+<strong>Drug Target Assessment</strong>: Evaluate therapeutic
+potential</li>
+</ol>
+<p>For advanced visualization methods including heatmaps, networks, and
+publication-ready themes, see the <strong>Visualization for Pleiotropy
+Analysis</strong> vignette.</p>
+</div>
+<div class="section level2">
+<h2 id="performance-tips">Performance Tips<a class="anchor" aria-label="anchor" href="#performance-tips"></a>
+</h2>
+<p>For large GWAS datasets:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Use data.table for efficient operations</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Parallel processing can speed up analysis</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org" class="external-link">future</a></span><span class="op">)</span></span>
+<span><span class="fu">plan</span><span class="op">(</span><span class="va">multisession</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Cache preprocessed results</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="st">"preprocessed_gwas.rds"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">gwas_clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"preprocessed_gwas.rds"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="getting-help">Getting Help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
+</h2>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Function documentation</span></span>
+<span><span class="op">?</span><span class="va">detect_pleiotropy</span></span>
+<span><span class="op">?</span><span class="va">preprocess_gwas</span></span>
+<span><span class="op">?</span><span class="va">plot_pleiotropy_manhattan</span></span>
+<span></span>
+<span><span class="co"># Package help</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"pleior"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<ul>
+<li><p>GWAS Catalog Team. (2024). GWAS Catalog: a knowledgebase for
+genome-wide association studies. <em>Nucleic Acids Research</em>,
+51(D1), D944-D949. <a href="https://doi.org/10.1093/nar/gkab1009" class="external-link uri">https://doi.org/10.1093/nar/gkab1009</a></p></li>
+<li><p>Watanabe, K., et al. (2019). A global overview of pleiotropy and
+genetic architecture in complex traits. <em>Nature Genetics</em>, 51,
+1339-1348. <a href="https://doi.org/10.1038/s41588-019-0685-1" class="external-link uri">https://doi.org/10.1038/s41588-019-0685-1</a></p></li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="session-information">Session Information<a class="anchor" aria-label="anchor" href="#session-information"></a>
+</h2>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

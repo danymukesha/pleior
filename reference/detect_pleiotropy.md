@@ -36,24 +36,19 @@ significance levels.
 data(gwas_subset)
 pleio_results <- detect_pleiotropy(gwas_subset)
 head(pleio_results)
-#>          SNPS N_TRAITS                                  TRAITS
-#>        <char>    <int>                                  <char>
-#> 1: rs10182181        2    body mass index;tyrosine measurement
-#> 2: rs10182181        2    body mass index;tyrosine measurement
-#> 3:  rs2817462        2 memory performance;tyrosine measurement
-#> 4:  rs3739081        2      C-reactive protein;body mass index
-#> 5:  rs3739081        2      C-reactive protein;body mass index
-#> 6:     rs7412        2       Alzheimer disease;LDL cholesterol
-#>            MAPPED_TRAIT PVALUE_MLOG CHR_ID   CHR_POS
-#>                  <char>       <num> <char>    <char>
-#> 1:      body mass index    29.69897      2  24927427
-#> 2: tyrosine measurement    11.69897      2  24927427
-#> 3: tyrosine measurement     9.69897      6 156588550
-#> 4:      body mass index     8.69897      2  26732753
-#> 5:   C-reactive protein    11.00000      2  26732753
-#> 6:    Alzheimer disease   122.39790     19  44919689
+#> # A tibble: 6 × 11
+#>   SNPS       N_TRAITS TRAITS   `DISEASE/TRAIT` CHR_ID CHR_POS `REPORTED GENE(S)`
+#>   <chr>         <int> <chr>    <chr>           <chr>  <chr>   <chr>             
+#> 1 rs10006235        3 Alzheim… Educational at… 4      129748… Intergenic        
+#> 2 rs10006766        2 hemoglo… Protein quanti… 4      872388… NR                
+#> 3 rs10007186        2 creatin… Non-albumin pr… 4      786678… ANXA3             
+#> 4 rs1000778        25 HbA1c m… Sphingolipid l… 11     618878… FADS3             
+#> 5 rs10008637       13 cholest… Estimated glom… 4      764929… SHROOM3           
+#> 6 rs10008637       13 cholest… Cardiometaboli… 4      764929… SHROOM3           
+#> # ℹ 4 more variables: `P-VALUE` <chr>, PVALUE_MLOG <dbl>,
+#> #   `P-VALUE (TEXT)` <chr>, MAPPED_TRAIT <chr>
 
-# Analyze specific traits
+# Analyze specific traitsdetect_pleiotropydetect_pleiotropy
 specific_traits <- c("Alzheimer disease", "myocardial infarction")
 pleio_specific <- detect_pleiotropy(gwas_subset, traits = specific_traits)
 ```

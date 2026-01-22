@@ -80,5 +80,6 @@ if (nrow(pleio_results) > 0) {
 }
 #> Warning: Unknown or uninitialised column: `SNP`.
 #> Warning: Unknown or uninitialised column: `SNP`.
+#> Warning: ggrepel: 66 unlabeled data points (too many overlaps). Consider increasing max.overlaps
 
 ```

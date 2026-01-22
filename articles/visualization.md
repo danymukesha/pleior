@@ -13,6 +13,15 @@ Load the package and example data:
 ``` r
 library(pleior)
 library(ggplot2)
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
 data(gwas_subset)
 ```
 
@@ -20,24 +29,21 @@ Preprocess and detect pleiotropic SNPs:
 
 ``` r
 gwas_clean <- preprocess_gwas(gwas_subset, pvalue_threshold = 5e-8)
-pleio_results <- detect_pleiotropy(gwas_clean)
+pleio_results <- detect_pleiotropy(
+  gwas_clean |>
+    dplyr::filter(stringr::str_detect(MAPPED_TRAIT, 'Alzheimer')) 
+  )
+pleio_results$MAPPED_TRAIT <- substr(pleio_results$MAPPED_TRAIT, 1, 20)
 head(pleio_results)
-#>          SNPS N_TRAITS                               TRAITS
-#>        <char>    <int>                               <char>
-#> 1: rs10182181        2 body mass index;tyrosine measurement
-#> 2: rs10182181        2 body mass index;tyrosine measurement
-#> 3:  rs3739081        2   C-reactive protein;body mass index
-#> 4:  rs3739081        2   C-reactive protein;body mass index
-#> 5:     rs7412        2    Alzheimer disease;LDL cholesterol
-#> 6:     rs7412        2    Alzheimer disease;LDL cholesterol
-#>            MAPPED_TRAIT PVALUE_MLOG CHR_ID  CHR_POS
-#>                  <char>       <num> <char>   <char>
-#> 1:      body mass index    29.69897      2 24927427
-#> 2: tyrosine measurement    11.69897      2 24927427
-#> 3:      body mass index     8.69897      2 26732753
-#> 4:   C-reactive protein    11.00000      2 26732753
-#> 5:    Alzheimer disease   122.39790     19 44919689
-#> 6:      LDL cholesterol  9629.00000     19 44919689
+#> # A tibble: 6 × 7
+#>   SNPS      N_TRAITS TRAITS              MAPPED_TRAIT PVALUE_MLOG CHR_ID CHR_POS
+#>   <chr>        <int> <chr>               <chr>              <dbl> <chr>  <chr>  
+#> 1 rs10119          4 Alzheimer disease;… family hist…       307   19     449034…
+#> 2 rs10119          4 Alzheimer disease;… Alzheimer d…       161.  19     449034…
+#> 3 rs10119          4 Alzheimer disease;… Alzheimer d…       130.  19     449034…
+#> 4 rs10119          4 Alzheimer disease;… late-onset …        56.7 19     449034…
+#> 5 rs1038025        2 Alzheimer disease;… Alzheimer d…        83.5 19     449017…
+#> 6 rs1038025        2 Alzheimer disease;… Alzheimer d…        39   19     449017…
 ```
 
 ## Publication-Ready Themes
@@ -70,7 +76,7 @@ traits:
 if (nrow(pleio_results) > 0) {
   p_network <- plot_pleiotropy_network(
     pleio_results,
-    top_n_snps = min(5, nrow(pleio_results)),
+    top_n_snps = min(10, nrow(pleio_results)),
     node_size_snp = 6,
     node_size_trait = 10,
     layout = "fr",
@@ -142,10 +148,10 @@ if (nrow(pleio_results) > 0) {
 Zoom in on specific genomic regions around pleiotropic SNPs:
 
 ``` r
-if (nrow(pleio_results) > 0 && "rs814573" %in% pleio_results$SNPS) {
+if (nrow(pleio_results) > 0 && "rs10401176" %in% pleio_results$SNPS) {
   p_regional <- plot_regional_association(
     pleio_results,
-    target_snp = "rs814573",
+    target_snp = "rs10401176",
     window_size = 500000,
     highlight_color = "#E31A1C"
   )
@@ -168,8 +174,8 @@ if (nrow(pleio_results) > 0) {
     top_n_traits = min(5, length(unique(pleio_results$MAPPED_TRAIT))),
     node_size = 8,
     layout = "kk",
-    show_edge_labels = TRUE,
-    color_by = "n_snps"
+    show_edge_labels = TRUE
+    # color_by = "n_snps"
   )
   
   print(p_cooccur)
@@ -214,6 +220,7 @@ if (nrow(pleio_results) > 0) {
       pleio_results,
       traits = traits[1:min(2, length(traits))],
       title = "SNP Sharing Between Traits",
+      
       show_counts = TRUE,
       show_percentages = TRUE,
       color_palette = "okabe_ito",

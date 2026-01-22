@@ -3,20 +3,20 @@
 ## Authors
 
 - **[Dany Mukesha](https://danymukesha.github.io/)**. Author,
-  maintainer. [](https://orcid.org/0000-0000-0000-0000)
+  maintainer.
 
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/danymukesha/pleior/blob/main/DESCRIPTION)
+[`inst/CITATION`](https://github.com/danymukesha/pleior/blob/main/inst/CITATION)
 
-Mukesha D (2026). *pleior: Pleiotropy Analysis for GWAS Data*. R package
-version 0.0.1, <https://github.com/danymukesha/pleior>.
+Mukesha, D. (2025). pleior: Pleiotropy Analysis for GWAS Data. R package
+version 0.99.0. https://github.com/danymukesha/pleior
 
     @Manual{,
       title = {pleior: Pleiotropy Analysis for GWAS Data},
       author = {Dany Mukesha},
-      year = {2026},
-      note = {R package version 0.0.1},
+      year = {2025},
+      note = {R package version 0.99.0},
       url = {https://github.com/danymukesha/pleior},
     }

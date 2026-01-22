@@ -9,7 +9,7 @@
 - [`get_pleiotropy_colors()`](https://danymukesha.github.io/pleior/reference/get_pleiotropy_colors.md)
   : Colorblind-Friendly Palettes for Pleiotropy Visualization
 - [`gwas_subset`](https://danymukesha.github.io/pleior/reference/gwas_subset.md)
-  : Example GWAS subset data
+  : GWAS Summary Statistics Subset
 - [`load_gwas_data()`](https://danymukesha.github.io/pleior/reference/load_gwas_data.md)
   : Load GWAS Summary Statistics
 - [`pleior`](https://danymukesha.github.io/pleior/reference/pleior-package.md)

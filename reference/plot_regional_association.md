@@ -56,5 +56,4 @@ if (nrow(pleio_results) > 0 && "rs814573" %in% pleio_results$SNPS) {
     p <- plot_regional_association(pleio_results, target_snp = "rs814573")
     print(p)
 }
-
 ```

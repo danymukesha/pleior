@@ -3,7 +3,7 @@
 considered pleiotropic if it shows significant associations with two or
 more distinct traits."><meta property="og:description" content="Identifies SNPs associated with multiple traits in GWAS data. A SNP is
 considered pleiotropic if it shows significant associations with two or
-more distinct traits."></head><body>
+more distinct traits."><meta property="og:image" content="https://danymukesha.github.io/pleior/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -11,7 +11,7 @@ more distinct traits."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">pleior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,8 +41,7 @@ more distinct traits."></head><body>
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Detect Pleiotropic SNPs</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Detect Pleiotropic SNPs</h1>
       <small class="dont-index">Source: <a href="https://github.com/danymukesha/pleior/blob/main/R/detect_pleiotropy.R" class="external-link"><code>R/detect_pleiotropy.R</code></a></small>
       <div class="d-none name"><code>detect_pleiotropy.Rd</code></div>
     </div>
@@ -87,24 +86,19 @@ more distinct traits.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gwas_subset</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pleio_results</span> <span class="op">&lt;-</span> <span class="fu">detect_pleiotropy</span><span class="op">(</span><span class="va">gwas_subset</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          SNPS N_TRAITS                                  TRAITS</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;char&gt;    &lt;int&gt;                                  &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: rs10182181        2    body mass index;tyrosine measurement</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: rs10182181        2    body mass index;tyrosine measurement</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  rs2817462        2 memory performance;tyrosine measurement</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  rs3739081        2      C-reactive protein;body mass index</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:  rs3739081        2      C-reactive protein;body mass index</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     rs7412        2       Alzheimer disease;LDL cholesterol</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            MAPPED_TRAIT PVALUE_MLOG CHR_ID   CHR_POS</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;char&gt;       &lt;num&gt; &lt;char&gt;    &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      body mass index    29.69897      2  24927427</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: tyrosine measurement    11.69897      2  24927427</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: tyrosine measurement     9.69897      6 156588550</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      body mass index     8.69897      2  26732753</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:   C-reactive protein    11.00000      2  26732753</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:    Alzheimer disease   122.39790     19  44919689</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 11</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   SNPS       N_TRAITS TRAITS   `DISEASE/TRAIT` CHR_ID CHR_POS `REPORTED GENE(S)`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> rs10006235        3 Alzheim… Educational at… 4      129748… Intergenic        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> rs10006766        2 hemoglo… Protein quanti… 4      872388… NR                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> rs10007186        2 creatin… Non-albumin pr… 4      786678… ANXA3             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> rs1000778        25 HbA1c m… Sphingolipid l… 11     618878… FADS3             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> rs10008637       13 cholest… Estimated glom… 4      764929… SHROOM3           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> rs10008637       13 cholest… Cardiometaboli… 4      764929… SHROOM3           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 4 more variables: `P-VALUE` &lt;chr&gt;, PVALUE_MLOG &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `P-VALUE (TEXT)` &lt;chr&gt;, MAPPED_TRAIT &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Analyze specific traits</span></span></span>
+<span class="r-in"><span><span class="co"># Analyze specific traitsdetect_pleiotropydetect_pleiotropy</span></span></span>
 <span class="r-in"><span><span class="va">specific_traits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alzheimer disease"</span>, <span class="st">"myocardial infarction"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pleio_specific</span> <span class="op">&lt;-</span> <span class="fu">detect_pleiotropy</span><span class="op">(</span><span class="va">gwas_subset</span>, traits <span class="op">=</span> <span class="va">specific_traits</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>

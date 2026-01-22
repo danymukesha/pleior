@@ -39,12 +39,12 @@ A filtered and cleaned data.table.
 data(gwas_subset)
 gwas_clean <- preprocess_gwas(gwas_subset, pvalue_threshold = 1e-5)
 head(gwas_clean)
-#>         SNPS          MAPPED_TRAIT PVALUE_MLOG CHR_ID   CHR_POS
-#>       <char>                <char>       <num> <char>    <char>
-#> 1:  rs814573     Alzheimer disease   672.69900     19  44908684
-#> 2:  rs814573 myocardial infarction    15.00000     19  44908684
-#> 3:    rs7412     Alzheimer disease   122.39790     19  44919689
-#> 4:    rs7412       LDL cholesterol  9629.00000     19  44919689
-#> 5: rs2817462    memory performance     6.30103      6 156588550
-#> 6: rs2817462  tyrosine measurement     9.69897      6 156588550
+#>          SNPS    MAPPED_TRAIT PVALUE_MLOG CHR_ID   CHR_POS
+#>        <char>          <char>       <num> <char>    <char>
+#> 1:  rs2820292 body mass index    10.09691      1 201815159
+#> 2:  rs6725549 body mass index    74.00000      2    630323
+#> 3: rs10182181 body mass index    29.69897      2  24927427
+#> 4:  rs3739081 body mass index     8.69897      2  26732753
+#> 5: rs13011109 body mass index    14.00000      2  58630284
+#> 6:  rs1016287 body mass index    12.39794      2  59078490
 ```

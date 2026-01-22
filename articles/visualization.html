@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pleior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,8 +63,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Visualization for Pleiotropy Analysis</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Visualization for Pleiotropy Analysis</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/danymukesha/pleior/blob/main/vignettes/visualization.Rmd" class="external-link"><code>vignettes/visualization.Rmd</code></a></small>
@@ -85,28 +84,34 @@ architecture.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/danymukesha/pleior" class="external-link">pleior</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     filter, lag</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">gwas_subset</span><span class="op">)</span></span></code></pre></div>
 <p>Preprocess and detect pleiotropic SNPs:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gwas_clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/preprocess_gwas.html">preprocess_gwas</a></span><span class="op">(</span><span class="va">gwas_subset</span>, pvalue_threshold <span class="op">=</span> <span class="fl">5e-8</span><span class="op">)</span></span>
-<span><span class="va">pleio_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detect_pleiotropy.html">detect_pleiotropy</a></span><span class="op">(</span><span class="va">gwas_clean</span><span class="op">)</span></span>
+<span><span class="va">pleio_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detect_pleiotropy.html">detect_pleiotropy</a></span><span class="op">(</span></span>
+<span>  <span class="va">gwas_clean</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">MAPPED_TRAIT</span>, <span class="st">'Alzheimer'</span><span class="op">)</span><span class="op">)</span> </span>
+<span>  <span class="op">)</span></span>
+<span><span class="va">pleio_results</span><span class="op">$</span><span class="va">MAPPED_TRAIT</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">$</span><span class="va">MAPPED_TRAIT</span>, <span class="fl">1</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          SNPS N_TRAITS                               TRAITS</span></span>
-<span><span class="co">#&gt;        &lt;char&gt;    &lt;int&gt;                               &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1: rs10182181        2 body mass index;tyrosine measurement</span></span>
-<span><span class="co">#&gt; 2: rs10182181        2 body mass index;tyrosine measurement</span></span>
-<span><span class="co">#&gt; 3:  rs3739081        2   C-reactive protein;body mass index</span></span>
-<span><span class="co">#&gt; 4:  rs3739081        2   C-reactive protein;body mass index</span></span>
-<span><span class="co">#&gt; 5:     rs7412        2    Alzheimer disease;LDL cholesterol</span></span>
-<span><span class="co">#&gt; 6:     rs7412        2    Alzheimer disease;LDL cholesterol</span></span>
-<span><span class="co">#&gt;            MAPPED_TRAIT PVALUE_MLOG CHR_ID  CHR_POS</span></span>
-<span><span class="co">#&gt;                  &lt;char&gt;       &lt;num&gt; &lt;char&gt;   &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:      body mass index    29.69897      2 24927427</span></span>
-<span><span class="co">#&gt; 2: tyrosine measurement    11.69897      2 24927427</span></span>
-<span><span class="co">#&gt; 3:      body mass index     8.69897      2 26732753</span></span>
-<span><span class="co">#&gt; 4:   C-reactive protein    11.00000      2 26732753</span></span>
-<span><span class="co">#&gt; 5:    Alzheimer disease   122.39790     19 44919689</span></span>
-<span><span class="co">#&gt; 6:      LDL cholesterol  9629.00000     19 44919689</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 7</span></span></span>
+<span><span class="co">#&gt;   SNPS      N_TRAITS TRAITS              MAPPED_TRAIT PVALUE_MLOG CHR_ID CHR_POS</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> rs10119          4 Alzheimer disease;… family hist…       307   19     449034…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> rs10119          4 Alzheimer disease;… Alzheimer d…       161.  19     449034…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> rs10119          4 Alzheimer disease;… Alzheimer d…       130.  19     449034…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> rs10119          4 Alzheimer disease;… late-onset …        56.7 19     449034…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> rs1038025        2 Alzheimer disease;… Alzheimer d…        83.5 19     449017…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> rs1038025        2 Alzheimer disease;… Alzheimer d…        39   19     449017…</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="publication-ready-themes">Publication-Ready Themes<a class="anchor" aria-label="anchor" href="#publication-ready-themes"></a>
@@ -137,7 +142,7 @@ traits:</p>
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">p_network</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_pleiotropy_network.html">plot_pleiotropy_network</a></span><span class="op">(</span></span>
 <span>    <span class="va">pleio_results</span>,</span>
-<span>    top_n_snps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    top_n_snps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    node_size_snp <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>    node_size_trait <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>    layout <span class="op">=</span> <span class="st">"fr"</span>,</span>
@@ -203,10 +208,10 @@ traits:</p>
 </h2>
 <p>Zoom in on specific genomic regions around pleiotropic SNPs:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;&amp;</span> <span class="st">"rs814573"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">pleio_results</span><span class="op">$</span><span class="va">SNPS</span><span class="op">)</span> <span class="op">{</span></span>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;&amp;</span> <span class="st">"rs10401176"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">pleio_results</span><span class="op">$</span><span class="va">SNPS</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">p_regional</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_regional_association.html">plot_regional_association</a></span><span class="op">(</span></span>
 <span>    <span class="va">pleio_results</span>,</span>
-<span>    target_snp <span class="op">=</span> <span class="st">"rs814573"</span>,</span>
+<span>    target_snp <span class="op">=</span> <span class="st">"rs10401176"</span>,</span>
 <span>    window_size <span class="op">=</span> <span class="fl">500000</span>,</span>
 <span>    highlight_color <span class="op">=</span> <span class="st">"#E31A1C"</span></span>
 <span>  <span class="op">)</span></span>
@@ -227,8 +232,8 @@ traits:</p>
 <span>    top_n_traits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">$</span><span class="va">MAPPED_TRAIT</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    node_size <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>    layout <span class="op">=</span> <span class="st">"kk"</span>,</span>
-<span>    show_edge_labels <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    color_by <span class="op">=</span> <span class="st">"n_snps"</span></span>
+<span>    show_edge_labels <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>    <span class="co"># color_by = "n_snps"</span></span>
 <span>  <span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_cooccur</span><span class="op">)</span></span>
@@ -269,6 +274,7 @@ traits:</p>
 <span>      <span class="va">pleio_results</span>,</span>
 <span>      traits <span class="op">=</span> <span class="va">traits</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">traits</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>      title <span class="op">=</span> <span class="st">"SNP Sharing Between Traits"</span>,</span>
+<span>      </span>
 <span>      show_counts <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>      show_percentages <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>      color_palette <span class="op">=</span> <span class="st">"okabe_ito"</span>,</span>
