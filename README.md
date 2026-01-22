@@ -1,8 +1,8 @@
-# pleior: Pleiotropy Analysis for GWAS Data
+# pleior <a href="https://danymukesha.github.io/pleior/"><img src="man/figures/logo.png" align="right" height="139" alt="pleior website" /></a>
 
-This package designed to analyze pleiotropy in genome-wide association studies
-(GWAS). Pleiotropy occurs when a single genetic variant influences multiple
-traits, offering insights into shared biological pathways and disease
+This package is designed to analyze pleiotropy in genome-wide association
+studies (GWAS). Pleiotropy occurs when a single genetic variant influences
+multiple traits, offering insights into shared biological pathways and disease
 relationships. This package enables users to identify, analyze, and visualize
 pleiotropic associations, addressing question of how genetic variants
 contribute to multiple complex traits, such as Alzheimer's disease and related

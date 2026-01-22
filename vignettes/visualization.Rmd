@@ -38,7 +38,7 @@ Preprocess and detect pleiotropic SNPs:
 gwas_clean <- preprocess_gwas(gwas_subset, pvalue_threshold = 5e-8)
 pleio_results <- detect_pleiotropy(
   gwas_clean |>
-    dplyr::filter(stringr::str_detect(MAPPED_TRAIT, 'dementia|Lewy')) 
+    dplyr::filter(stringr::str_detect(MAPPED_TRAIT, 'Alzheimer')) 
   )
 pleio_results$MAPPED_TRAIT <- substr(pleio_results$MAPPED_TRAIT, 1, 20)
 head(pleio_results)
@@ -71,7 +71,7 @@ Visualize connections between pleiotropic SNPs and their associated traits:
 if (nrow(pleio_results) > 0) {
   p_network <- plot_pleiotropy_network(
     pleio_results,
-    top_n_snps = min(100, nrow(pleio_results)),
+    top_n_snps = min(10, nrow(pleio_results)),
     node_size_snp = 6,
     node_size_trait = 10,
     layout = "fr",
@@ -128,10 +128,10 @@ if (nrow(pleio_results) > 0) {
 Zoom in on specific genomic regions around pleiotropic SNPs:
 
 ```{r regional, fig.width = 10, fig.height = 6}
-if (nrow(pleio_results) > 0 && "rs12453" %in% pleio_results$SNPS) {
+if (nrow(pleio_results) > 0 && "rs10401176" %in% pleio_results$SNPS) {
   p_regional <- plot_regional_association(
     pleio_results,
-    target_snp = "rs12453",
+    target_snp = "rs10401176",
     window_size = 500000,
     highlight_color = "#E31A1C"
   )
@@ -152,8 +152,8 @@ if (nrow(pleio_results) > 0) {
     top_n_traits = min(5, length(unique(pleio_results$MAPPED_TRAIT))),
     node_size = 8,
     layout = "kk",
-    show_edge_labels = TRUE,
-    color_by = "n_snps"
+    show_edge_labels = TRUE
+    # color_by = "n_snps"
   )
   
   print(p_cooccur)
