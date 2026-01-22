@@ -1,0 +1,19 @@
+citHeader("To cite pleior in publications, please use:")
+
+citEntry(entry="Manual",
+         title = "pleior: Pleiotropy Analysis for GWAS Data",
+         author = personList(
+           person(given="Dany", family="Mukesha")
+         ),
+         year = 2025,
+         note = "R package version 0.99.0",
+         url = "https://github.com/danymukesha/pleior",
+         
+         textVersion =
+         paste("Mukesha, D. (2025).",
+               "pleior: Pleiotropy Analysis for GWAS Data.",
+               "R package version 0.99.0.",
+               "https://github.com/danymukesha/pleior")
+)
+
+citFooter("If you use pleior in published research, please cite it.")

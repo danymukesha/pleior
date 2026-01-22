@@ -21,6 +21,7 @@
 #'     print(p)
 #' }
 #'
+#' @import dplyr
 #' @export
 plot_pleiotropy_manhattan <- function(pleio_data,
                                       highlight_snp = NULL,
@@ -65,7 +66,7 @@ plot_pleiotropy_manhattan <- function(pleio_data,
         )
 
     plot_data <- plot_data |>
-        left_join(chr_lengths[, c("CHR_ID", "CUMPOS_START")], by = "CHR_ID") |>
+        left_join(chr_lengths %>% select(CHR_ID, CUMPOS_START), by = "CHR_ID") |>
         mutate(PLOT_POS = CUMPOS_START + CHR_POS)
 
     colors <- rep(c("#1f77b4", "#ff7f0e"), length.out = nrow(chr_lengths))

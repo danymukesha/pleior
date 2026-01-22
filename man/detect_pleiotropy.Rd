@@ -29,7 +29,7 @@ data(gwas_subset)
 pleio_results <- detect_pleiotropy(gwas_subset)
 head(pleio_results)
 
-# Analyze specific traits
+# Analyze specific traitsdetect_pleiotropydetect_pleiotropy
 specific_traits <- c("Alzheimer disease", "myocardial infarction")
 pleio_specific <- detect_pleiotropy(gwas_subset, traits = specific_traits)
 

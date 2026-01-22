@@ -12,8 +12,8 @@
 #' @param color_palette Character. Color palette: "bluered", "viridis", "plasma", "default" (default: "bluered")
 #' @param scale Character. Scale values: "none", "row", "column" (default: "none")
 #' @param show_values Logical. Show numeric values in cells (default: FALSE)
-#' @param value_format Character. Format string for values (default: "%.1f")
-#' @param legend_title Character. Legend title (default: "-log10(p)")
+#' @param value_format Character. Format string for values (default:  NULL)
+#' @param legend_title Character. Legend title (default: NULL)
 #'
 #' @return A ggplot2 heatmap object
 #'
@@ -40,8 +40,14 @@ plot_pleiotropy_heatmap <- function(pleio_data,
                                     color_palette = "bluered",
                                     scale = "none",
                                     show_values = FALSE,
-                                    value_format = "%.1f",
-                                    legend_title = "-log10(p)") {
+                                    value_format = NULL,
+                                    legend_title = NULL) {
+    if (is.null(value_format)) {
+        value_format <- "%.1f"
+    }
+    if (is.null(value_format)) {
+        legend_title <- "-log10(p)"
+    }
     if (!is.data.frame(pleio_data)) {
         stop("Input must be a data.frame or data.table")
     }

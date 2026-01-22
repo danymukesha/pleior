@@ -14,8 +14,8 @@ plot_pleiotropy_heatmap(
   color_palette = "bluered",
   scale = "none",
   show_values = FALSE,
-  value_format = "\%.1f",
-  legend_title = "-log10(p)"
+  value_format = NULL,
+  legend_title = NULL
 )
 }
 \arguments{
@@ -37,9 +37,9 @@ plot_pleiotropy_heatmap(
 
 \item{show_values}{Logical. Show numeric values in cells (default: FALSE)}
 
-\item{value_format}{Character. Format string for values (default: "%.1f")}
+\item{value_format}{Character. Format string for values (default:  NULL)}
 
-\item{legend_title}{Character. Legend title (default: "-log10(p)")}
+\item{legend_title}{Character. Legend title (default: NULL)}
 }
 \value{
 A ggplot2 heatmap object

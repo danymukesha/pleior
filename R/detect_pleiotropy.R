@@ -21,7 +21,7 @@
 #' pleio_results <- detect_pleiotropy(gwas_subset)
 #' head(pleio_results)
 #'
-#' # Analyze specific traits
+#' # Analyze specific traitsdetect_pleiotropydetect_pleiotropy
 #' specific_traits <- c("Alzheimer disease", "myocardial infarction")
 #' pleio_specific <- detect_pleiotropy(gwas_subset, traits = specific_traits)
 #'
@@ -68,12 +68,13 @@ detect_pleiotropy <- function(gwas_data, traits = NULL, pvalue_threshold = 5e-8)
 
     if (nrow(pleio_table) == 0) {
         warning("No pleiotropic SNPs found with current parameters")
-        return(data.table::data.table())
+        return(dplyr::tibble())
     }
 
     pleio_results <- pleio_table |>
         left_join(gwas_data, by = "SNPS") |>
-        filter(PVALUE_MLOG >= -log10(pvalue_threshold))
+        filter(PVALUE_MLOG >= -log10(pvalue_threshold)) |>
+        filter(!if_any(everything(), ~ is.na(.x)))
 
-    return(data.table::as.data.table(pleio_results))
+    return(pleio_results)
 }

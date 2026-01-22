@@ -93,7 +93,8 @@ plot_multi_trait_manhattan <- function(pleio_data,
         ungroup()
 
     plot_data <- plot_data |>
-        left_join(chr_lengths[, c("MAPPED_TRAIT", "CHR_ID", "CUMPOS_START")],
+        left_join(
+            chr_lengths %>% select(MAPPED_TRAIT, CHR_ID, CUMPOS_START),
             by = c("MAPPED_TRAIT", "CHR_ID")
         ) |>
         mutate(PLOT_POS = CUMPOS_START + CHR_POS)
