@@ -29,6 +29,7 @@ Understanding pleiotropy helps the users to:
 ## Installation
 
 ``` r
+
 # Install from GitHub
 if (!require("devtools", quietly = TRUE))
     install.packages("devtools")
@@ -45,6 +46,7 @@ The package includes a curated subset of GWAS catalog data containing
 ~2,500 significant associations across 15 diverse traits.
 
 ``` r
+
 # Load the example dataset
 data(gwas_subset)
 
@@ -64,6 +66,7 @@ cat("Unique traits:", length(unique(gwas_subset$MAPPED_TRAIT)), "\n")
 Clean the data and filter for genome-wide significance:
 
 ``` r
+
 # Filter for genome-wide significant associations (p < 5e-8)
 gwas_clean <- preprocess_gwas(
     gwas_subset,
@@ -78,6 +81,7 @@ cat("After filtering:", nrow(gwas_clean), "significant associations\n")
 Identify SNPs associated with multiple traits:
 
 ``` r
+
 # Detect pleiotropy across all traits
 pleio_results <- detect_pleiotropy(gwas_clean)
 
@@ -90,6 +94,7 @@ head(pleio_results, 10)
 ### Step 3: Analyze Pleiotropic SNPs
 
 ``` r
+
 # Summary statistics
 snp_summary <- pleio_results %>%
     group_by(SNPS) %>%
@@ -110,6 +115,7 @@ print(snp_summary)
 Create a Manhattan plot highlighting pleiotropic SNPs:
 
 ``` r
+
 # Plot with top pleiotropic SNP highlighted
 if (nrow(pleio_results) > 0) {
     top_snp <- snp_summary$SNPS[1]
@@ -129,6 +135,7 @@ if (nrow(pleio_results) > 0) {
 See how many SNPs are associated with each trait:
 
 ``` r
+
 trait_counts <- pleio_results %>%
     count(MAPPED_TRAIT, sort = TRUE)
 
@@ -153,6 +160,7 @@ print(p_traits)
 Visualize the distribution of number of traits per SNP:
 
 ``` r
+
 snp_trait_dist <- pleio_results %>%
     group_by(SNPS) %>%
     summarise(n_traits = n(), .groups = "drop")
@@ -179,6 +187,7 @@ print(p_spectrum)
 You can analyze pleiotropy between specific traits of interest:
 
 ``` r
+
 # Define traits of interest
 target_traits <- c(
     "Alzheimer's disease",
@@ -243,6 +252,7 @@ Analysis** vignette.
 For large GWAS datasets:
 
 ``` r
+
 # Use data.table for efficient operations
 library(data.table)
 
@@ -259,6 +269,7 @@ if (file.exists("preprocessed_gwas.rds")) {
 ## Getting Help
 
 ``` r
+
 # Function documentation
 ?detect_pleiotropy
 ?preprocess_gwas
@@ -281,5 +292,6 @@ help(package = "pleior")
 ## Session Information
 
 ``` r
+
 sessionInfo()
 ```

@@ -41,5 +41,11 @@ if (nrow(pleio_results) > 0) {
     p <- plot_pleiotropy_manhattan(pleio_results, highlight_snp = "rs814573")
     print(p)
 }
+#> Warning: There were 2 warnings in `mutate()`.
+#> The first warning was:
+#> ℹ In argument: `CHR_POS = as.numeric(CHR_POS)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
 
 ```

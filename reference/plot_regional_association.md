@@ -56,4 +56,11 @@ if (nrow(pleio_results) > 0 && "rs814573" %in% pleio_results$SNPS) {
     p <- plot_regional_association(pleio_results, target_snp = "rs814573")
     print(p)
 }
+#> Warning: There were 2 warnings in `filter()`.
+#> The first warning was:
+#> ℹ In argument: `as.numeric(CHR_POS) >= region_start`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+
 ```

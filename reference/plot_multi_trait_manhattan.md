@@ -37,9 +37,11 @@ plot_multi_trait_manhattan(
 
 - significance_line:
 
-  Numeric. Genome-wide significance threshold (default: 5e-8) \* @param
-  suggestive_line Numeric. Suggestive significance threshold (default:
-  1e-5)
+  Numeric. Genome-wide significance threshold (default: 5e-8)
+
+- suggestive_line:
+
+  Numeric. Suggestive significance threshold (default: 1e-5)
 
 - highlight_snp:
 

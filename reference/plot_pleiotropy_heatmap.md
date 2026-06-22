@@ -83,9 +83,5 @@ if (nrow(pleio_results) > 0) {
     p <- plot_pleiotropy_heatmap(pleio_results, top_n_snps = 5, top_n_traits = 4)
     print(p)
 }
-#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-#> ℹ Please use `linewidth` instead.
-#> ℹ The deprecated feature was likely used in the pleior package.
-#>   Please report the issue at <https://github.com/danymukesha/pleior/issues>.
 
 ```

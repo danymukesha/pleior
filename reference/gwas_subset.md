@@ -117,12 +117,12 @@ gwas_clean <- preprocess_gwas(gwas_subset, pvalue_threshold = 1e-5)
 pleio_results <- detect_pleiotropy(gwas_clean)
 head(pleio_results)
 #> # A tibble: 6 × 7
-#>   SNPS       N_TRAITS TRAITS             MAPPED_TRAIT PVALUE_MLOG CHR_ID CHR_POS
-#>   <chr>         <int> <chr>              <chr>              <dbl> <chr>  <chr>  
-#> 1 esv3585367        2 rheumatoid arthri… rheumatoid …        27   1      173496…
-#> 2 esv3585367        2 rheumatoid arthri… rheumatoid …        32.4 1      173496…
-#> 3 esv3585367        2 rheumatoid arthri… rheumatoid …        29.7 1      173496…
-#> 4 esv3585367        2 rheumatoid arthri… rheumatoid …        24.7 1      173496…
-#> 5 esv3585367        2 rheumatoid arthri… rheumatoid …        10.7 1      173496…
-#> 6 esv3585367        2 rheumatoid arthri… rheumatoid …         8   1      173496…
+#>   SNPS              N_TRAITS TRAITS      MAPPED_TRAIT PVALUE_MLOG CHR_ID CHR_POS
+#>   <chr>                <int> <chr>       <chr>              <dbl> <chr>  <chr>  
+#> 1 1:221765779:C_CA         2 forced exp… vital capac…        7.70 NA     NA     
+#> 2 1:237929787:T_TCA        2 forced exp… vital capac…        7.40 NA     NA     
+#> 3 6p21.32                  2 disorder o… nasal disor…       18.7  NA     NA     
+#> 4 6p21.32                  2 disorder o… disorder of…       10.7  NA     NA     
+#> 5 6p21.32                  2 disorder o… nasal disor…       15    NA     NA     
+#> 6 A*01:01                  3 susceptibi… susceptibil…        7.70 NA     NA     
 ```

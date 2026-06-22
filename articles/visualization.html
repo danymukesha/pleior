@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Visualization for Pleiotropy Analysis • pleior</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Visualization for Pleiotropy Analysis">
 </head>
@@ -104,14 +104,14 @@ architecture.</p>
 <span><span class="va">pleio_results</span><span class="op">$</span><span class="va">MAPPED_TRAIT</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">$</span><span class="va">MAPPED_TRAIT</span>, <span class="fl">1</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pleio_results</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 7</span></span></span>
-<span><span class="co">#&gt;   SNPS      N_TRAITS TRAITS              MAPPED_TRAIT PVALUE_MLOG CHR_ID CHR_POS</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> rs10119          4 Alzheimer disease;… family hist…       307   19     449034…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> rs10119          4 Alzheimer disease;… Alzheimer d…       161.  19     449034…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> rs10119          4 Alzheimer disease;… Alzheimer d…       130.  19     449034…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> rs10119          4 Alzheimer disease;… late-onset …        56.7 19     449034…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> rs1038025        2 Alzheimer disease;… Alzheimer d…        83.5 19     449017…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> rs1038025        2 Alzheimer disease;… Alzheimer d…        39   19     449017…</span></span></code></pre></div>
+<span><span class="co">#&gt;   SNPS           N_TRAITS TRAITS         MAPPED_TRAIT PVALUE_MLOG CHR_ID CHR_POS</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> chr19:44901434        2 Alzheimer dis… Alzheimer d…        20   <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> chr19:44901434        2 Alzheimer dis… Alzheimer d…        27.3 <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> chr19:44905579        2 Alzheimer dis… Alzheimer d…        35.4 <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> chr19:44905579        2 Alzheimer dis… Alzheimer d…        26.7 <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> chr19:44905910        2 Alzheimer dis… Alzheimer d…        32.4 <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> chr19:44905910        2 Alzheimer dis… Alzheimer d…        44.4 <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="publication-ready-themes">Publication-Ready Themes<a class="anchor" aria-label="anchor" href="#publication-ready-themes"></a>
@@ -151,9 +151,7 @@ traits:</p>
 <span>  <span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/theme_pleiotropy_publication.html">theme_pleiotropy_publication</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_network</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `SNP`.</span></span>
-<span><span class="co">#&gt; Unknown or uninitialised column: `SNP`.</span></span></code></pre></div>
+<span><span class="op">}</span></span></code></pre></div>
 <p><img src="visualization_files/figure-html/network-1.png" class="r-plt" alt="" width="960"></p>
 </div>
 <div class="section level2">
@@ -173,14 +171,7 @@ traits:</p>
 <span>  <span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">p_heatmap</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="co">#&gt; Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Please use `linewidth` instead.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">pleior</span> package.</span></span>
-<span><span class="co">#&gt;   Please report the issue at <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/danymukesha/pleior/issues&gt;</span>.</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">This warning is displayed once per session.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">generated.</span></span></span></code></pre></div>
+<span><span class="op">}</span></span></code></pre></div>
 <p><img src="visualization_files/figure-html/heatmap-1.png" class="r-plt" alt="" width="960"></p>
 </div>
 <div class="section level2">

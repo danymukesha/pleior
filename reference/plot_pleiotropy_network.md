@@ -78,8 +78,5 @@ if (nrow(pleio_results) > 0) {
     p <- plot_pleiotropy_network(pleio_results, top_n_snps = 5)
     print(p)
 }
-#> Warning: Unknown or uninitialised column: `SNP`.
-#> Warning: Unknown or uninitialised column: `SNP`.
-#> Warning: ggrepel: 66 unlabeled data points (too many overlaps). Consider increasing max.overlaps
 
 ```

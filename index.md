@@ -42,6 +42,7 @@ unified toolset to explore pleiotropy in a practical, accessible manner.
 To install the development version from GitHub:
 
 ``` r
+
 if (!require("devtools", quietly = TRUE))
     install.packages("devtools")
 
@@ -51,6 +52,7 @@ devtools::install_github("danymukesha/pleior")
 ## Quick Start
 
 ``` r
+
 library(pleior)
 
 # Load example dataset (real GWAS catalog data)
@@ -126,6 +128,7 @@ The dataset includes diverse traits to demonstrate pleiotropy:
 ## Complete Workflow Example
 
 ``` r
+
 library(pleior)
 
 # Step 1: Load GWAS data
@@ -196,6 +199,7 @@ Detailed documentation is available through:
 Access vignettes:
 
 ``` r
+
 vignette("Introduction to pleior", package = "pleior")
 vignette("Visualization for Pleiotropy Analysis", package = "pleior")
 ```
@@ -205,6 +209,7 @@ vignette("Visualization for Pleiotropy Analysis", package = "pleior")
 Each function has detailed help pages:
 
 ``` r
+
 # Core functions
 ?detect_pleiotropy
 ?preprocess_gwas
@@ -233,6 +238,7 @@ If you use `pleior` in published research, please cite:
 Generate citation within R:
 
 ``` r
+
 citation("pleior")
 ```
 

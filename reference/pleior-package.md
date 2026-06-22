@@ -23,4 +23,4 @@ Useful links:
 
 ## Author
 
-\[Dany MUKESHA\]
+Dany Mukesha

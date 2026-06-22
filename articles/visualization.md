@@ -11,6 +11,7 @@ architecture.
 Load the package and example data:
 
 ``` r
+
 library(pleior)
 library(ggplot2)
 library(dplyr)
@@ -28,6 +29,7 @@ data(gwas_subset)
 Preprocess and detect pleiotropic SNPs:
 
 ``` r
+
 gwas_clean <- preprocess_gwas(gwas_subset, pvalue_threshold = 5e-8)
 pleio_results <- detect_pleiotropy(
   gwas_clean |>
@@ -36,14 +38,14 @@ pleio_results <- detect_pleiotropy(
 pleio_results$MAPPED_TRAIT <- substr(pleio_results$MAPPED_TRAIT, 1, 20)
 head(pleio_results)
 #> # A tibble: 6 × 7
-#>   SNPS      N_TRAITS TRAITS              MAPPED_TRAIT PVALUE_MLOG CHR_ID CHR_POS
-#>   <chr>        <int> <chr>               <chr>              <dbl> <chr>  <chr>  
-#> 1 rs10119          4 Alzheimer disease;… family hist…       307   19     449034…
-#> 2 rs10119          4 Alzheimer disease;… Alzheimer d…       161.  19     449034…
-#> 3 rs10119          4 Alzheimer disease;… Alzheimer d…       130.  19     449034…
-#> 4 rs10119          4 Alzheimer disease;… late-onset …        56.7 19     449034…
-#> 5 rs1038025        2 Alzheimer disease;… Alzheimer d…        83.5 19     449017…
-#> 6 rs1038025        2 Alzheimer disease;… Alzheimer d…        39   19     449017…
+#>   SNPS           N_TRAITS TRAITS         MAPPED_TRAIT PVALUE_MLOG CHR_ID CHR_POS
+#>   <chr>             <int> <chr>          <chr>              <dbl> <chr>  <chr>  
+#> 1 chr19:44901434        2 Alzheimer dis… Alzheimer d…        20   NA     NA     
+#> 2 chr19:44901434        2 Alzheimer dis… Alzheimer d…        27.3 NA     NA     
+#> 3 chr19:44905579        2 Alzheimer dis… Alzheimer d…        35.4 NA     NA     
+#> 4 chr19:44905579        2 Alzheimer dis… Alzheimer d…        26.7 NA     NA     
+#> 5 chr19:44905910        2 Alzheimer dis… Alzheimer d…        32.4 NA     NA     
+#> 6 chr19:44905910        2 Alzheimer dis… Alzheimer d…        44.4 NA     NA
 ```
 
 ## Publication-Ready Themes
@@ -52,6 +54,7 @@ head(pleio_results)
 journals:
 
 ``` r
+
 p <- ggplot(mtcars, aes(x = wt, y = mpg)) + 
   geom_point(aes(color = factor(cyl))) +
   labs(title = "Example Plot with Publication Theme")
@@ -73,6 +76,7 @@ Visualize connections between pleiotropic SNPs and their associated
 traits:
 
 ``` r
+
 if (nrow(pleio_results) > 0) {
   p_network <- plot_pleiotropy_network(
     pleio_results,
@@ -86,8 +90,6 @@ if (nrow(pleio_results) > 0) {
   
   print(p_network)
 }
-#> Warning: Unknown or uninitialised column: `SNP`.
-#> Unknown or uninitialised column: `SNP`.
 ```
 
 ![](visualization_files/figure-html/network-1.png)
@@ -97,6 +99,7 @@ if (nrow(pleio_results) > 0) {
 Create a heatmap showing SNP-trait associations:
 
 ``` r
+
 if (nrow(pleio_results) > 0) {
   p_heatmap <- plot_pleiotropy_heatmap(
     pleio_results,
@@ -110,13 +113,6 @@ if (nrow(pleio_results) > 0) {
   
   print(p_heatmap)
 }
-#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-#> ℹ Please use `linewidth` instead.
-#> ℹ The deprecated feature was likely used in the pleior package.
-#>   Please report the issue at <https://github.com/danymukesha/pleior/issues>.
-#> This warning is displayed once per session.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
 ```
 
 ![](visualization_files/figure-html/heatmap-1.png)
@@ -126,6 +122,7 @@ if (nrow(pleio_results) > 0) {
 Compare genome-wide associations across multiple traits:
 
 ``` r
+
 if (nrow(pleio_results) > 0) {
   p_multi <- plot_multi_trait_manhattan(
     pleio_results,
@@ -148,6 +145,7 @@ if (nrow(pleio_results) > 0) {
 Zoom in on specific genomic regions around pleiotropic SNPs:
 
 ``` r
+
 if (nrow(pleio_results) > 0 && "rs10401176" %in% pleio_results$SNPS) {
   p_regional <- plot_regional_association(
     pleio_results,
@@ -167,6 +165,7 @@ if (nrow(pleio_results) > 0 && "rs10401176" %in% pleio_results$SNPS) {
 Visualize how traits share pleiotropic SNPs:
 
 ``` r
+
 if (nrow(pleio_results) > 0) {
   p_cooccur <- plot_trait_cooccurrence_network(
     pleio_results,
@@ -191,6 +190,7 @@ if (nrow(pleio_results) > 0) {
 Compare effect sizes across traits:
 
 ``` r
+
 if (nrow(pleio_results) > 0) {
   p_effect <- plot_effect_size_comparison(
     pleio_results,
@@ -212,6 +212,7 @@ if (nrow(pleio_results) > 0) {
 Visualize SNP sharing between traits:
 
 ``` r
+
 if (nrow(pleio_results) > 0) {
   traits <- unique(pleio_results$MAPPED_TRAIT)[1:min(3, length(unique(pleio_results$MAPPED_TRAIT)))]
   
@@ -239,6 +240,7 @@ if (nrow(pleio_results) > 0) {
 Analyze the distribution of significance values:
 
 ``` r
+
 if (nrow(pleio_results) > 0) {
   p_landscape <- plot_pleiotropy_landscape(
     pleio_results,
@@ -260,6 +262,7 @@ if (nrow(pleio_results) > 0) {
 Create multi-panel figures for publications:
 
 ``` r
+
 if (nrow(pleio_results) > 0) {
   p1 <- plot_pleiotropy_manhattan(
     pleio_results,
@@ -287,6 +290,7 @@ if (nrow(pleio_results) > 0) {
 Export figures in high-resolution formats:
 
 ``` r
+
 # Save as PDF (vector format for journals)
 save_publication_plot(
   p_heatmap,
