@@ -13,7 +13,6 @@
 #' @return A data.table with pleiotropic SNPs, their associated traits,
 #'   and significance levels.
 #'
-#' @importFrom dplyr group_by summarise filter left_join n setdiff
 #' @importFrom stringr str_detect
 #'
 #' @examples
@@ -21,7 +20,7 @@
 #' pleio_results <- detect_pleiotropy(gwas_subset)
 #' head(pleio_results)
 #'
-#' # Analyze specific traitsdetect_pleiotropydetect_pleiotropy
+#' # Analyze specific traits
 #' specific_traits <- c("Alzheimer disease", "myocardial infarction")
 #' pleio_specific <- detect_pleiotropy(gwas_subset, traits = specific_traits)
 #'
@@ -52,16 +51,13 @@ detect_pleiotropy <- function(gwas_data, traits = NULL, pvalue_threshold = 5e-8)
     }
 
     pleio_table <- gwas_data |>
+        filter(!is.na(PVALUE_MLOG)) |>
         group_by(SNPS, MAPPED_TRAIT) |>
-        summarise(
-            TRAIT = MAPPED_TRAIT[which.max(PVALUE_MLOG)],
-            MAX_PVALUE_MLOG = max(PVALUE_MLOG),
-            .groups = "drop"
-        ) |>
+        summarise(MAX_PVALUE_MLOG = max(PVALUE_MLOG), .groups = "drop") |>
         group_by(SNPS) |>
         summarise(
             N_TRAITS = n(),
-            TRAITS = paste(unique(TRAIT), collapse = ";"),
+            TRAITS = paste(unique(MAPPED_TRAIT), collapse = ";"),
             .groups = "drop"
         ) |>
         filter(N_TRAITS > 1)
@@ -74,7 +70,7 @@ detect_pleiotropy <- function(gwas_data, traits = NULL, pvalue_threshold = 5e-8)
     pleio_results <- pleio_table |>
         left_join(gwas_data, by = "SNPS") |>
         filter(PVALUE_MLOG >= -log10(pvalue_threshold)) |>
-        filter(!if_any(everything(), ~ is.na(.x)))
+        filter(!is.na(PVALUE_MLOG))
 
     return(pleio_results)
 }

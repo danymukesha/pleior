@@ -18,7 +18,6 @@
 #' @return A ggplot2 heatmap object
 #'
 #' @import ggplot2
-#' @importFrom dplyr group_by summarise mutate filter arrange slice_head ungroup select rename
 #' @importFrom tidyr pivot_wider
 #' @importFrom scales viridis_pal
 #'
@@ -45,7 +44,7 @@ plot_pleiotropy_heatmap <- function(pleio_data,
     if (is.null(value_format)) {
         value_format <- "%.1f"
     }
-    if (is.null(value_format)) {
+    if (is.null(legend_title)) {
         legend_title <- "-log10(p)"
     }
     if (!is.data.frame(pleio_data)) {
@@ -134,7 +133,7 @@ plot_pleiotropy_heatmap <- function(pleio_data,
     )
 
     p <- ggplot(plot_data_long, aes(x = MAPPED_TRAIT, y = SNPS, fill = value)) +
-        geom_tile(color = "white", size = 0.5) +
+        geom_tile(color = "white", linewidth = 0.5) +
         scale_fill_gradientn(
             colors = colors,
             name = legend_title,
@@ -148,7 +147,7 @@ plot_pleiotropy_heatmap <- function(pleio_data,
         labs(
             title = "Pleiotropic SNP-Trait Association Heatmap",
             subtitle = paste(
-                "Top", nlevels(plot_data_long$SNPS), "SNPs ×",
+                "Top", nlevels(plot_data_long$SNPS), "SNPs x",
                 nlevels(plot_data_long$MAPPED_TRAIT), "Traits"
             ),
             x = "Trait",
@@ -188,7 +187,6 @@ plot_pleiotropy_heatmap <- function(pleio_data,
 #' @return A ggplot2 regional plot object
 #'
 #' @import ggplot2
-#' @importFrom dplyr group_by summarise mutate filter ungroup select
 #'
 #' @examples
 #' data(gwas_subset)
@@ -259,7 +257,7 @@ plot_regional_association <- function(pleio_data,
         scale_color_manual(values = colors, name = "Trait") +
         labs(
             title = paste("Regional Association Plot:", target_snp),
-            subtitle = sprintf("Chr %s: %d ± %d kb", target_chr, target_pos, window_size / 1000),
+            subtitle = sprintf("Chr %s: %d +/- %d kb", target_chr, target_pos, window_size / 1000),
             x = "Distance from target SNP (kb)",
             y = expression(-log[10](p))
         ) +

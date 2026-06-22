@@ -12,7 +12,6 @@
 #'
 #' @return A filtered and cleaned data.table.
 #'
-#' @importFrom dplyr filter select all_of setdiff
 #'
 #' @examples
 #' data(gwas_subset)
@@ -35,6 +34,7 @@ preprocess_gwas <- function(gwas_data,
     }
 
     names(gwas_data) <- gsub(" ", "_", names(gwas_data))
+    columns <- gsub(" ", "_", columns)
 
     required_cols <- c("SNPS", "MAPPED_TRAIT", "PVALUE_MLOG")
     missing_cols <- setdiff(required_cols, names(gwas_data))

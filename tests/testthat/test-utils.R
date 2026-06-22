@@ -1,5 +1,3 @@
-library(testthat)
-
 test_that("validate_gwas_data correctly validates GWAS data", {
     required_cols <- c("SNP", "P", "CHR", "BP")
     gwas_data_valid <- data.frame(

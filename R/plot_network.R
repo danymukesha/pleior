@@ -18,7 +18,6 @@
 #' @return A ggraph ggplot2 object
 #'
 #' @import ggplot2
-#' @importFrom dplyr group_by summarise mutate filter arrange slice_head ungroup rename
 #' @importFrom igraph graph_from_data_frame set_vertex_attr
 #' @import ggraph
 #'
@@ -93,11 +92,11 @@ plot_pleiotropy_network <- function(pleio_data,
             filter(SNPS %in% top_snps)
 
         g <- igraph::set_vertex_attr(g, "type",
-            value = ifelse(igraph::V(g)$name %in% snp_chrom$SNP, "SNP", "Trait")
+            value = ifelse(igraph::V(g)$name %in% snp_chrom$SNPS, "SNP", "Trait")
         )
         g <- igraph::set_vertex_attr(g, "n_traits",
-            value = ifelse(igraph::V(g)$name %in% snp_counts$SNP,
-                snp_counts$N_TRAITS[match(igraph::V(g)$name, snp_counts$SNP)], 1
+            value = ifelse(igraph::V(g)$name %in% snp_counts$SNPS,
+                snp_counts$N_TRAITS[match(igraph::V(g)$name, snp_counts$SNPS)], 1
             )
         )
     } else {
@@ -106,7 +105,7 @@ plot_pleiotropy_network <- function(pleio_data,
         )
         g <- igraph::set_vertex_attr(g, "n_traits",
             value = ifelse(igraph::V(g)$name %in% top_snps,
-                snp_counts$N_TRAITS[match(igraph::V(g)$name, snp_counts$SNP)], 1
+                snp_counts$N_TRAITS[match(igraph::V(g)$name, snp_counts$SNPS)], 1
             )
         )
     }
@@ -173,7 +172,6 @@ plot_pleiotropy_network <- function(pleio_data,
 #' @return A ggraph ggplot2 object
 #'
 #' @import ggplot2
-#' @importFrom dplyr group_by summarise mutate filter arrange slice_head ungroup rename
 #' @importFrom igraph graph_from_data_frame
 #' @import ggraph
 #' @importFrom ggrepel geom_text_repel

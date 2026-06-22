@@ -8,7 +8,7 @@
 #' @param traits Character vector. Specific traits to plot (default: NULL uses top traits)
 #' @param max_traits Integer. Maximum number of traits to display (default: 6)
 #' @param significance_line Numeric. Genome-wide significance threshold (default: 5e-8)
-#' * @param suggestive_line Numeric. Suggestive significance threshold (default: 1e-5)
+#' @param suggestive_line Numeric. Suggestive significance threshold (default: 1e-5)
 #' @param highlight_snp Character. SNP to highlight across all traits (default: NULL)
 #' @param point_size Numeric. Point size (default: 1)
 #' @param alpha Numeric. Point transparency (default: 0.6)
@@ -17,7 +17,6 @@
 #' @return A ggplot2 object
 #'
 #' @import ggplot2
-#' @importFrom dplyr group_by summarise mutate filter arrange slice_head ungroup left_join
 #' @importFrom tidyr unite
 #'
 #' @examples
@@ -197,7 +196,6 @@ plot_multi_trait_manhattan <- function(pleio_data,
 #' @return A ggplot2 object
 #'
 #' @import ggplot2
-#' @importFrom dplyr group_by summarise mutate filter arrange slice_head ungroup
 #' @importFrom tidyr pivot_longer
 #'
 #' @examples
@@ -301,7 +299,7 @@ plot_effect_size_comparison <- function(pleio_data,
     }
 
     if (use_log_scale) {
-        p <- p + scale_y_continuous(trans = "log10")
+        p <- p + scale_y_log10()
     }
 
     if (flip_coords) {

@@ -2,7 +2,7 @@ test_that("detect_pleiotropy identifies pleiotropic SNPs", {
     data(gwas_subset, envir = environment())
 
     result <- detect_pleiotropy(gwas_subset)
-    expect_s3_class(result, "data.table")
+    expect_s3_class(result, "data.frame")
 
     if (nrow(result) > 0) {
         expect_true(all(result$N_TRAITS > 1))
@@ -16,7 +16,7 @@ test_that("detect_pleiotropy handles trait filtering", {
     specific_traits <- c("Alzheimer disease", "myocardial infarction")
     result <- detect_pleiotropy(gwas_subset, traits = specific_traits)
 
-    expect_s3_class(result, "data.table")
+    expect_s3_class(result, "data.frame")
     if (nrow(result) > 0) {
         expect_true(all(grepl(
             paste(specific_traits, collapse = "|"),

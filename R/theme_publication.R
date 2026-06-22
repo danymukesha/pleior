@@ -131,6 +131,7 @@ get_pleiotropy_colors <- function(palette_name = "okabe_ito", n = NULL) {
 #' @return Invisible NULL (saves file to disk)
 #'
 #' @import ggplot2
+#' @importFrom tools file_ext
 #'
 #' @examples
 #' \dontrun{
@@ -195,7 +196,7 @@ save_publication_plot <- function(plot, filename, width = 7, height = 5,
 #'
 #' @return A patchwork object
 #'
-#' @importFrom patchwork wrap_plots plot_layout
+#' @importFrom patchwork wrap_plots plot_layout plot_annotation
 #'
 #' @examples
 #' \dontrun{
@@ -218,19 +219,8 @@ combine_publication_plots <- function(..., ncol = NULL, nrow = NULL,
     combined <- wrap_plots(plots, ncol = ncol, nrow = nrow)
 
     if (!is.null(labels) && length(labels) == length(plots)) {
-        combined <- combined + plot_layout(tag_level = tag_position) &
+        combined <- combined + plot_annotation(tag_levels = list(labels), tag_prefix = "") &
             theme(plot.tag = element_text(size = 12, face = "bold"))
-
-        for (i in seq_along(plots)) {
-            combined <- combined + patchwork::patchworkGrob(
-                ggplot2::annotation_custom(
-                    grid::textGrob(labels[i],
-                        x = grid::unit(0.05, "npc"),
-                        y = grid::unit(0.95, "npc"), gp = grid::gpar(fontsize = 12, fontface = "bold")
-                    )
-                )
-            )
-        }
     }
 
     return(combined)

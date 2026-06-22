@@ -1,6 +1,3 @@
-test_that("multiplication works", {
-    expect_equal(2 * 2, 4)
-})
 test_that("plot_multi_trait_manhattan creates valid plot", {
     data(gwas_subset, envir = environment())
     pleio_data <- detect_pleiotropy(gwas_subset)
