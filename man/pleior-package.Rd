@@ -25,7 +25,7 @@ Useful links:
 
 }
 \author{
-[Dany MUKESHA]
+Dany Mukesha
 }
 \keyword{GWAS}
 \keyword{genetics}

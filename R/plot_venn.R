@@ -15,7 +15,6 @@
 #'
 #' @import ggplot2
 #' @importFrom ggforce geom_circle
-#' @importFrom dplyr filter group_by summarise mutate
 #'
 #' @examples
 #' data(gwas_subset)
@@ -295,7 +294,6 @@ plot_venn_4set <- function(trait_snps, colors, alpha,
 #' @return A ggplot2 object
 #'
 #' @import ggplot2
-#' @importFrom dplyr group_by summarise mutate
 #'
 #' @examples
 #' data(gwas_subset)

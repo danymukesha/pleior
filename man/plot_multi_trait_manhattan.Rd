@@ -23,8 +23,9 @@ plot_multi_trait_manhattan(
 
 \item{max_traits}{Integer. Maximum number of traits to display (default: 6)}
 
-\item{significance_line}{Numeric. Genome-wide significance threshold (default: 5e-8)
-* @param suggestive_line Numeric. Suggestive significance threshold (default: 1e-5)}
+\item{significance_line}{Numeric. Genome-wide significance threshold (default: 5e-8)}
+
+\item{suggestive_line}{Numeric. Suggestive significance threshold (default: 1e-5)}
 
 \item{highlight_snp}{Character. SNP to highlight across all traits (default: NULL)}
 

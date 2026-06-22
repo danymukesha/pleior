@@ -11,7 +11,6 @@
 #' @return A ggplot2 object representing the Manhattan plot.
 #'
 #' @import ggplot2
-#' @importFrom dplyr ungroup mutate arrange filter group_by setdiff
 #'
 #' @examples
 #' data(gwas_subset)
