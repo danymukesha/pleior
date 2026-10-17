@@ -27,7 +27,7 @@ Character vector of hex color codes
 
 ``` r
 get_pleiotropy_colors("okabe_ito", n = 5)
-#> [1] "#E69F00" "#3CAF66" "#6A6859" "#321E29" "#F0F0F0"
+#> [1] "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2"
 get_pleiotropy_colors("viridis", n = 10)
 #>  [1] "#440154" "#482878" "#3E4A89" "#31688E" "#26828E" "#1F9E89" "#35B779"
 #>  [8] "#6DCD59" "#B4DE2C" "#FDE725"

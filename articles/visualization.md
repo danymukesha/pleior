@@ -31,21 +31,23 @@ Preprocess and detect pleiotropic SNPs:
 ``` r
 
 gwas_clean <- preprocess_gwas(gwas_subset, pvalue_threshold = 5e-8)
-pleio_results <- detect_pleiotropy(
-  gwas_clean |>
-    dplyr::filter(stringr::str_detect(MAPPED_TRAIT, 'Alzheimer')) 
-  )
+pleio_results <- detect_pleiotropy(gwas_clean)
 pleio_results$MAPPED_TRAIT <- substr(pleio_results$MAPPED_TRAIT, 1, 20)
 head(pleio_results)
-#> # A tibble: 6 × 7
-#>   SNPS           N_TRAITS TRAITS         MAPPED_TRAIT PVALUE_MLOG CHR_ID CHR_POS
-#>   <chr>             <int> <chr>          <chr>              <dbl> <chr>  <chr>  
-#> 1 chr19:44901434        2 Alzheimer dis… Alzheimer d…        20   NA     NA     
-#> 2 chr19:44901434        2 Alzheimer dis… Alzheimer d…        27.3 NA     NA     
-#> 3 chr19:44905579        2 Alzheimer dis… Alzheimer d…        35.4 NA     NA     
-#> 4 chr19:44905579        2 Alzheimer dis… Alzheimer d…        26.7 NA     NA     
-#> 5 chr19:44905910        2 Alzheimer dis… Alzheimer d…        32.4 NA     NA     
-#> 6 chr19:44905910        2 Alzheimer dis… Alzheimer d…        44.4 NA     NA
+#>       SNPS         MAPPED_TRAIT PVALUE_MLOG CHR_ID  CHR_POS N_TRAITS
+#> 1 rs429358 C-reactive protein m  1952.69897     19 44908684       12
+#> 2 rs429358 high density lipopro   497.00000     19 44908684       12
+#> 3 rs429358    Alzheimer disease   323.00000     19 44908684       12
+#> 4 rs429358 total cholesterol me   323.00000     19 44908684       12
+#> 5 rs429358 low density lipoprot   186.52288     19 44908684       12
+#> 6 rs429358 coronary artery dise    42.39794     19 44908684       12
+#>                                                                                                                                                                                                                                                                                                                                TRAITS
+#> 1 Alzheimer disease;body height;body mass index;C-reactive protein measurement;coronary artery disease;high density lipoprotein cholesterol measurement;low density lipoprotein cholesterol measurement;myocardial infarction;systolic blood pressure;total cholesterol measurement;triglyceride measurement;type 2 diabetes mellitus
+#> 2 Alzheimer disease;body height;body mass index;C-reactive protein measurement;coronary artery disease;high density lipoprotein cholesterol measurement;low density lipoprotein cholesterol measurement;myocardial infarction;systolic blood pressure;total cholesterol measurement;triglyceride measurement;type 2 diabetes mellitus
+#> 3 Alzheimer disease;body height;body mass index;C-reactive protein measurement;coronary artery disease;high density lipoprotein cholesterol measurement;low density lipoprotein cholesterol measurement;myocardial infarction;systolic blood pressure;total cholesterol measurement;triglyceride measurement;type 2 diabetes mellitus
+#> 4 Alzheimer disease;body height;body mass index;C-reactive protein measurement;coronary artery disease;high density lipoprotein cholesterol measurement;low density lipoprotein cholesterol measurement;myocardial infarction;systolic blood pressure;total cholesterol measurement;triglyceride measurement;type 2 diabetes mellitus
+#> 5 Alzheimer disease;body height;body mass index;C-reactive protein measurement;coronary artery disease;high density lipoprotein cholesterol measurement;low density lipoprotein cholesterol measurement;myocardial infarction;systolic blood pressure;total cholesterol measurement;triglyceride measurement;type 2 diabetes mellitus
+#> 6 Alzheimer disease;body height;body mass index;C-reactive protein measurement;coronary artery disease;high density lipoprotein cholesterol measurement;low density lipoprotein cholesterol measurement;myocardial infarction;systolic blood pressure;total cholesterol measurement;triglyceride measurement;type 2 diabetes mellitus
 ```
 
 ## Publication-Ready Themes
@@ -67,7 +69,7 @@ p3 <- p + theme_pleiotropy_publication(journal_style = "science")
 # Colorblind-friendly palettes
 colors <- get_pleiotropy_colors("okabe_ito", n = 5)
 print(colors)
-#> [1] "#E69F00" "#3CAF66" "#6A6859" "#321E29" "#F0F0F0"
+#> [1] "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2"
 ```
 
 ## Network Graph Visualization
@@ -146,10 +148,10 @@ Zoom in on specific genomic regions around pleiotropic SNPs:
 
 ``` r
 
-if (nrow(pleio_results) > 0 && "rs10401176" %in% pleio_results$SNPS) {
+if (nrow(pleio_results) > 0 && "rs814573" %in% pleio_results$SNPS) {
   p_regional <- plot_regional_association(
     pleio_results,
-    target_snp = "rs10401176",
+    target_snp = "rs814573",
     window_size = 500000,
     highlight_color = "#E31A1C"
   )
@@ -179,8 +181,6 @@ if (nrow(pleio_results) > 0) {
   
   print(p_cooccur)
 }
-#> Warning in plot_trait_cooccurrence_network(pleio_results, min_shared_snps = 1,
-#> : No trait pairs meet minimum shared SNP criteria
 ```
 
 ![](visualization_files/figure-html/cooccurrence-1.png)

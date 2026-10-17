@@ -258,11 +258,11 @@ and drug targets</li>
 </h2>
 <p>You can analyze pleiotropy between specific traits of interest:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Define traits of interest</span></span>
+<code class="sourceCode R"><span><span class="co"># Define traits of interest (must match MAPPED_TRAIT exactly)</span></span>
 <span><span class="va">target_traits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Alzheimer's disease"</span>,</span>
-<span>    <span class="st">"Type 2 diabetes"</span>,</span>
-<span>    <span class="st">"Coronary artery disease"</span></span>
+<span>    <span class="st">"Alzheimer disease"</span>,</span>
+<span>    <span class="st">"type 2 diabetes mellitus"</span>,</span>
+<span>    <span class="st">"coronary artery disease"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Filter for these traits</span></span>
@@ -304,11 +304,11 @@ influences</li>
 <div class="section level3">
 <h3 id="example-interpretation">Example Interpretation<a class="anchor" aria-label="anchor" href="#example-interpretation"></a>
 </h3>
-<p>Consider a SNP like <code>rs814573</code>:</p>
+<p>Consider a SNP like <code>rs814573</code> (in the APOE region):</p>
 <ul>
 <li>
-<strong>Associated with</strong>: Alzheimer’s disease, myocardial
-infarction, LDL cholesterol</li>
+<strong>Associated with</strong>: myocardial infarction, C-reactive
+protein measurement</li>
 <li>
 <strong>Significance</strong>: p &lt; 5e-8 for all traits</li>
 <li>
@@ -399,7 +399,7 @@ genetic architecture in complex traits. <em>Nature Genetics</em>, 51,
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

@@ -1,6 +1,6 @@
 # GWAS Summary Statistics Subset
 
-A curated subset of GWAS catalog summary statistics prepared for
+A curated subset of GWAS Catalog summary statistics prepared for
 pleiotropy analysis.
 
 ## Usage
@@ -11,7 +11,7 @@ gwas_subset
 
 ## Format
 
-A data.table with 1000-5000 rows and 5 columns:
+A data.table with 2498 rows and 5 columns:
 
 - SNPS:
 
@@ -38,31 +38,59 @@ A data.table with 1000-5000 rows and 5 columns:
 GWAS Catalog associations file (2024 release), downloaded from:
 <https://www.ebi.ac.uk/gwas/api/search/downloads/alternative>
 
-The subset was created by: 1. Loading the complete GWAS catalog
-associations file 2. Filtering for genome-wide significant associations
-(P \< 1e-5) 3. Selecting top traits by number of associations 4.
-Creating a balanced subset of ~500 associations 5. Ensuring
-representation across multiple chromosomes
+The subset was created by `data-raw/create_gwas_subset.R`: 1. Loading
+the complete GWAS Catalog associations file 2. Selecting 15 traits
+relevant to complex disease and metabolism 3. Collapsing duplicate study
+entries to one row per SNP-trait pair (keeping the most significant
+association) 4. Retaining all associations of the strongest pleiotropic
+SNPs, then filling with a trait-balanced random sample to reach ~2500
+rows 5. Ensuring representation across multiple chromosomes
 
 ## Details
 
 This dataset contains genome-wide association study (GWAS) summary
-statistics from the GWAS Catalog (https://www.ebi.ac.uk/gwas/), focusing
-on diverse traits to demonstrate pleiotropy detection and visualization.
+statistics from the GWAS Catalog (https://www.ebi.ac.uk/gwas/), reduced
+to a small, reproducible set that demonstrates pleiotropy detection and
+visualization. It is the example dataset shipped with \`pleior\`.
 
-This dataset includes associations with diverse traits such as:
+The dataset contains 2498 associations covering 1835 distinct SNPs
+across 15 traits. Of these SNPs, 128 are pleiotropic (associated with
+two or more of the 15 traits); the strongest, `rs429358` (in the APOE
+region), maps to 12 traits. `rs814573`, used as a running example in the
+README, is associated with myocardial infarction and C-reactive protein
+measurement in this subset.
 
-- Body mass index
+The 15 traits are:
 
-- Alzheimer's disease
+- body mass index
 
-- Type 2 diabetes
+- body height
 
-- Coronary artery disease
+- Alzheimer disease
 
-- Blood pressure traits
+- myocardial infarction
 
-- Lipid levels (LDL, HDL cholesterol)
+- coronary artery disease
+
+- type 2 diabetes mellitus
+
+- systolic blood pressure
+
+- diastolic blood pressure
+
+- low density lipoprotein cholesterol measurement
+
+- high density lipoprotein cholesterol measurement
+
+- triglyceride measurement
+
+- total cholesterol measurement
+
+- C-reactive protein measurement
+
+- asthma
+
+- schizophrenia
 
 The data is suitable for:
 
@@ -87,42 +115,54 @@ association studies. \*Nucleic Acids Research\*, 51(D1), D944-D949.
 # Load the data
 data(gwas_subset)
 head(gwas_subset)
-#>      DISEASE/TRAIT CHR_ID   CHR_POS REPORTED GENE(S)       SNPS P-VALUE
-#>             <char> <char>    <char>           <char>     <char>  <char>
-#> 1: Body mass index      1 201815159               NR  rs2820292   8E-11
-#> 2: Body mass index      2    630323               NR  rs6725549   1E-74
-#> 3: Body mass index      2  24927427               NR rs10182181   2E-30
-#> 4: Body mass index      2  26732753               NR  rs3739081    2E-9
-#> 5: Body mass index      2  58630284               NR rs13011109   1E-14
-#> 6: Body mass index      2  59078490               NR  rs1016287   4E-13
-#>    PVALUE_MLOG P-VALUE (TEXT)    MAPPED_TRAIT
-#>          <num>         <char>          <char>
-#> 1:    10.09691           <NA> body mass index
-#> 2:    74.00000           <NA> body mass index
-#> 3:    29.69897           <NA> body mass index
-#> 4:     8.69897           <NA> body mass index
-#> 5:    14.00000           <NA> body mass index
-#> 6:    12.39794           <NA> body mass index
+#>           SNPS                                    MAPPED_TRAIT PVALUE_MLOG
+#>         <char>                                          <char>       <num>
+#> 1: rs115866895                                     body height   13.698970
+#> 2: rs560221037 low density lipoprotein cholesterol measurement   11.221849
+#> 3:  rs12081179                         systolic blood pressure    7.522879
+#> 4:   rs4908677                                     body height    7.522879
+#> 5:   rs6682378                                 body mass index    9.698970
+#> 6:   rs1381928                                          asthma    8.397940
+#>    CHR_ID CHR_POS
+#>    <char>   <num>
+#> 1:      1 1661177
+#> 2:      1 2235046
+#> 3:      1 2319680
+#> 4:      1 7678120
+#> 5:      1 8071697
+#> 6:      1 8630874
 
 # Basic statistics
 n_unique_snps <- length(unique(gwas_subset$SNPS))
 n_unique_traits <- length(unique(gwas_subset$MAPPED_TRAIT))
 cat("Unique SNPs:", n_unique_snps, "\n")
-#> Unique SNPs: 452164 
+#> Unique SNPs: 1835 
 cat("Unique traits:", n_unique_traits, "\n")
-#> Unique traits: 16452 
+#> Unique traits: 15 
 
 # Preprocess and detect pleiotropy
 gwas_clean <- preprocess_gwas(gwas_subset, pvalue_threshold = 1e-5)
 pleio_results <- detect_pleiotropy(gwas_clean)
 head(pleio_results)
-#> # A tibble: 6 × 7
-#>   SNPS              N_TRAITS TRAITS      MAPPED_TRAIT PVALUE_MLOG CHR_ID CHR_POS
-#>   <chr>                <int> <chr>       <chr>              <dbl> <chr>  <chr>  
-#> 1 1:221765779:C_CA         2 forced exp… vital capac…        7.70 NA     NA     
-#> 2 1:237929787:T_TCA        2 forced exp… vital capac…        7.40 NA     NA     
-#> 3 6p21.32                  2 disorder o… nasal disor…       18.7  NA     NA     
-#> 4 6p21.32                  2 disorder o… disorder of…       10.7  NA     NA     
-#> 5 6p21.32                  2 disorder o… nasal disor…       15    NA     NA     
-#> 6 A*01:01                  3 susceptibi… susceptibil…        7.70 NA     NA     
+#>       SNPS                                     MAPPED_TRAIT PVALUE_MLOG CHR_ID
+#> 1 rs429358                   C-reactive protein measurement  1952.69897     19
+#> 2 rs429358 high density lipoprotein cholesterol measurement   497.00000     19
+#> 3 rs429358                                Alzheimer disease   323.00000     19
+#> 4 rs429358                    total cholesterol measurement   323.00000     19
+#> 5 rs429358  low density lipoprotein cholesterol measurement   186.52288     19
+#> 6 rs429358                          coronary artery disease    42.39794     19
+#>    CHR_POS N_TRAITS
+#> 1 44908684       12
+#> 2 44908684       12
+#> 3 44908684       12
+#> 4 44908684       12
+#> 5 44908684       12
+#> 6 44908684       12
+#>                                                                                                                                                                                                                                                                                                                                TRAITS
+#> 1 Alzheimer disease;C-reactive protein measurement;body height;body mass index;coronary artery disease;high density lipoprotein cholesterol measurement;low density lipoprotein cholesterol measurement;myocardial infarction;systolic blood pressure;total cholesterol measurement;triglyceride measurement;type 2 diabetes mellitus
+#> 2 Alzheimer disease;C-reactive protein measurement;body height;body mass index;coronary artery disease;high density lipoprotein cholesterol measurement;low density lipoprotein cholesterol measurement;myocardial infarction;systolic blood pressure;total cholesterol measurement;triglyceride measurement;type 2 diabetes mellitus
+#> 3 Alzheimer disease;C-reactive protein measurement;body height;body mass index;coronary artery disease;high density lipoprotein cholesterol measurement;low density lipoprotein cholesterol measurement;myocardial infarction;systolic blood pressure;total cholesterol measurement;triglyceride measurement;type 2 diabetes mellitus
+#> 4 Alzheimer disease;C-reactive protein measurement;body height;body mass index;coronary artery disease;high density lipoprotein cholesterol measurement;low density lipoprotein cholesterol measurement;myocardial infarction;systolic blood pressure;total cholesterol measurement;triglyceride measurement;type 2 diabetes mellitus
+#> 5 Alzheimer disease;C-reactive protein measurement;body height;body mass index;coronary artery disease;high density lipoprotein cholesterol measurement;low density lipoprotein cholesterol measurement;myocardial infarction;systolic blood pressure;total cholesterol measurement;triglyceride measurement;type 2 diabetes mellitus
+#> 6 Alzheimer disease;C-reactive protein measurement;body height;body mass index;coronary artery disease;high density lipoprotein cholesterol measurement;low density lipoprotein cholesterol measurement;myocardial infarction;systolic blood pressure;total cholesterol measurement;triglyceride measurement;type 2 diabetes mellitus
 ```

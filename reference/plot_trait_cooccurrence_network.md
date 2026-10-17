@@ -63,6 +63,5 @@ if (nrow(pleio_results) > 0) {
     p <- plot_trait_cooccurrence_network(pleio_results, top_n_traits = 5)
     print(p)
 }
-#> Warning: No trait pairs meet minimum shared SNP criteria
 
 ```

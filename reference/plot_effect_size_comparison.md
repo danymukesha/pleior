@@ -11,7 +11,7 @@ plot_effect_size_comparison(
   pleio_data,
   top_n_snps = 15,
   effect_col = "PVALUE_MLOG",
-  use_log_scale = TRUE,
+  use_log_scale = FALSE,
   show_error_bars = FALSE,
   error_col = NULL,
   color_by = "snp",
@@ -35,7 +35,8 @@ plot_effect_size_comparison(
 
 - use_log_scale:
 
-  Logical. Use log scale for effect sizes (default: TRUE)
+  Logical. Use a log10 scale for the effect sizes. Ignored when
+  \`effect_col\` is already a -log10(p) column (default: FALSE)
 
 - show_error_bars:
 
@@ -43,7 +44,8 @@ plot_effect_size_comparison(
 
 - error_col:
 
-  Character. Column for standard errors (default: NULL)
+  Character. Column holding the standard error of \`effect_col\`
+  (default: NULL)
 
 - color_by:
 

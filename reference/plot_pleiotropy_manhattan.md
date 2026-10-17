@@ -10,6 +10,7 @@ and can highlight specific SNPs of interest.
 plot_pleiotropy_manhattan(
   pleio_data,
   highlight_snp = NULL,
+  significance_line = 5e-08,
   title = "Manhattan Plot of Pleiotropic SNPs"
 )
 ```
@@ -23,6 +24,11 @@ plot_pleiotropy_manhattan(
 - highlight_snp:
 
   Character. SNP identifier to highlight (default: NULL).
+
+- significance_line:
+
+  Numeric. Genome-wide significance threshold as a p-value, drawn as a
+  red line (default: 5e-8).
 
 - title:
 
@@ -41,11 +47,5 @@ if (nrow(pleio_results) > 0) {
     p <- plot_pleiotropy_manhattan(pleio_results, highlight_snp = "rs814573")
     print(p)
 }
-#> Warning: There were 2 warnings in `mutate()`.
-#> The first warning was:
-#> ℹ In argument: `CHR_POS = as.numeric(CHR_POS)`.
-#> Caused by warning:
-#> ! NAs introduced by coercion
-#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
 
 ```

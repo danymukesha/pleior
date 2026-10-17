@@ -107,7 +107,7 @@
 <div class="section level2">
 <h2 id="gwas-data">GWAS Data<a class="anchor" aria-label="anchor" href="#gwas-data"></a>
 </h2>
-<p>The package includes a <strong>curated subset of GWAS Catalog data</strong> containing approximately 2,500 significant associations across 15 diverse traits.</p>
+<p>The package includes a <strong>curated subset of GWAS Catalog data</strong> containing 2,498 significant associations across 15 diverse traits, covering 1,835 SNPs (128 of which are pleiotropic).</p>
 <div class="section level3">
 <h3 id="data-source">Data Source<a class="anchor" aria-label="anchor" href="#data-source"></a>
 </h3>
@@ -126,22 +126,23 @@
 <div class="section level3">
 <h3 id="included-traits">Included Traits<a class="anchor" aria-label="anchor" href="#included-traits"></a>
 </h3>
-<p>The dataset includes diverse traits to demonstrate pleiotropy:</p>
+<p>The dataset includes 15 traits spanning disease, metabolic and anthropometric phenotypes:</p>
 <ul>
-<li>Body mass index (BMI)</li>
-<li>Alzheimer’s disease</li>
-<li>Type 2 diabetes</li>
-<li>Coronary artery disease</li>
-<li>Blood pressure traits</li>
-<li>Lipid levels (LDL, HDL cholesterol)</li>
-<li>Other metabolic traits</li>
+<li>Body mass index, body height</li>
+<li>Alzheimer disease, schizophrenia</li>
+<li>Myocardial infarction, coronary artery disease</li>
+<li>Type 2 diabetes mellitus</li>
+<li>Systolic / diastolic blood pressure</li>
+<li>LDL, HDL and total cholesterol, triglycerides</li>
+<li>C-reactive protein measurement</li>
+<li>Asthma</li>
 </ul>
 </div>
 <div class="section level3">
 <h3 id="data-quality">Data Quality<a class="anchor" aria-label="anchor" href="#data-quality"></a>
 </h3>
 <ul>
-<li>All associations have significant p-values (p &lt; 1e-5)</li>
+<li>One row per SNP-trait pair (duplicate studies collapsed, most significant kept)</li>
 <li>Chromosomal positions validated</li>
 <li>Trait names standardized from GWAS Catalog mapping</li>
 <li>SNP identifiers cleaned and validated</li>
@@ -247,12 +248,13 @@
 <div class="section level3">
 <h3 id="example-rs814573">Example: rs814573<a class="anchor" aria-label="anchor" href="#example-rs814573"></a>
 </h3>
-<p>This SNP is associated with:</p>
+<p>This SNP sits in the APOE region on chromosome 19. In the curated subset it is associated with:</p>
 <ul>
-<li>Alzheimer’s disease</li>
 <li>Myocardial infarction</li>
-<li>LDL cholesterol</li>
+<li>C-reactive protein measurement</li>
 </ul>
+<p>(In the full GWAS Catalog it additionally maps to an Alzheimer disease polygenic risk score and APOE isoform levels, among other traits.)</p>
+<p>A more strongly pleiotropic example in the dataset is <code>rs429358</code>, which maps to 12 of the 15 traits.</p>
 <p><strong>Implications</strong>:</p>
 <ul>
 <li>Affects pathways related to lipid metabolism and cardiovascular health</li>
@@ -428,7 +430,7 @@ https://doi.org/10.1093/nar/gkab1009</code></pre>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

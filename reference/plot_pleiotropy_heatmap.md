@@ -42,7 +42,8 @@ plot_pleiotropy_heatmap(
 
 - show_dendrograms:
 
-  Logical. Show row and column dendrograms (default: FALSE)
+  Logical. If TRUE, rows (SNPs) and columns (traits) are ordered by
+  hierarchical clustering (default: FALSE)
 
 - clustering_method:
 
@@ -56,7 +57,8 @@ plot_pleiotropy_heatmap(
 
 - scale:
 
-  Character. Scale values: "none", "row", "column" (default: "none")
+  Character. Scale values across the heatmap: "none" (default), "row"
+  (z-score each SNP) or "column" (z-score each trait)
 
 - show_values:
 
