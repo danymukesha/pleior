@@ -14,7 +14,7 @@
 #' @return A ggplot2 object
 #'
 #' @import ggplot2
-#' @importFrom ggforce geom_circle
+#' @importFrom ggforce geom_circle geom_ellipse
 #'
 #' @examples
 #' data(gwas_subset)
@@ -204,70 +204,124 @@ plot_venn_3set <- function(trait_snps, colors, alpha,
     return(p)
 }
 
+.venn_ellipse_params <- function() {
+    data.frame(
+        x0 = c(0.35, 0.50, 0.50, 0.65),
+        y0 = c(0.47, 0.57, 0.57, 0.47),
+        a = c(0.35, 0.20, 0.20, 0.35),
+        b = c(0.20, 0.35, 0.35, 0.20),
+        angle = c(0, 45, 135, 0),
+        color = c("#0072B2", "#D55E00", "#009E73", "#CC79A7"),
+        stringsAsFactors = FALSE
+    )
+}
+
+.venn_inside_ellipse <- function(x, y, ex, ey, a, b, angle_deg) {
+    ang <- angle_deg * pi / 180
+    dx <- x - ex
+    dy <- y - ey
+    xr <- dx * cos(ang) + dy * sin(ang)
+    yr <- -dx * sin(ang) + dy * cos(ang)
+    (xr / a)^2 + (yr / b)^2 <= 1
+}
+
+.venn_region_labels <- function(trait_snps, ellipses, n_grid = 400) {
+    n <- length(trait_snps)
+    grid <- expand.grid(
+        x = seq(0, 1, length.out = n_grid),
+        y = seq(0, 1, length.out = n_grid)
+    )
+
+    membership <- vapply(seq_len(n), function(i) {
+        .venn_inside_ellipse(
+            grid$x, grid$y,
+            ellipses$x0[i], ellipses$y0[i],
+            ellipses$a[i], ellipses$b[i], ellipses$angle[i]
+        )
+    }, logical(nrow(grid)))
+
+    codes <- apply(membership, 1, function(r) paste(as.integer(r), collapse = ""))
+
+    total <- length(unique(unlist(trait_snps)))
+
+    region_list <- list()
+    for (code in unique(codes)) {
+        which_in <- as.integer(strsplit(code, "")[[1]]) == 1
+        if (sum(which_in) == 0) next
+
+        snp_sets <- trait_snps[which_in]
+        members <- if (sum(which_in) == 1) {
+            snp_sets[[1]]
+        } else {
+            Reduce(intersect, snp_sets)
+        }
+        for (j in seq_len(n)) {
+            if (!which_in[j]) members <- setdiff(members, trait_snps[[j]])
+        }
+
+        idx <- which(codes == code)
+        region_list[[code]] <- list(
+            count = length(members),
+            x = mean(grid$x[idx]),
+            y = mean(grid$y[idx])
+        )
+    }
+
+    list(regions = region_list, total = total)
+}
+
 plot_venn_4set <- function(trait_snps, colors, alpha,
                            show_counts, show_percentages, title) {
-    snp1 <- trait_snps[[1]]
-    snp2 <- trait_snps[[2]]
-    snp3 <- trait_snps[[3]]
-    snp4 <- trait_snps[[4]]
+    ellipses <- .venn_ellipse_params()
+    ellipses$color <- colors[seq_len(4)]
 
-    total <- length(unique(c(snp1, snp2, snp3, snp4)))
+    info <- .venn_region_labels(trait_snps, ellipses)
+    total <- info$total
 
-    only1 <- length(setdiff(snp1, Reduce(union, list(snp2, snp3, snp4))))
-    only2 <- length(setdiff(snp2, Reduce(union, list(snp1, snp3, snp4))))
-    only3 <- length(setdiff(snp3, Reduce(union, list(snp1, snp2, snp4))))
-    only4 <- length(setdiff(snp4, Reduce(union, list(snp1, snp2, snp3))))
-
-    intersect_all <- length(Reduce(intersect, list(snp1, snp2, snp3, snp4)))
-
-    labels <- c(only1, only2, only3, only4, rep(intersect_all, 11))
-    positions <- list(
-        only1 = c(0.25, 0.65),
-        only2 = c(0.75, 0.65),
-        only3 = c(0.25, 0.25),
-        only4 = c(0.75, 0.25),
-        intersect12 = c(0.5, 0.65),
-        intersect13 = c(0.25, 0.45),
-        intersect14 = c(0.4, 0.45),
-        intersect23 = c(0.75, 0.45),
-        intersect24 = c(0.6, 0.45),
-        intersect34 = c(0.5, 0.25),
-        intersect123 = c(0.35, 0.55),
-        intersect124 = c(0.65, 0.55),
-        intersect134 = c(0.35, 0.35),
-        intersect234 = c(0.65, 0.35),
-        intersect_all = c(0.5, 0.45)
-    )
-
-    df <- data.frame(
-        x = c(0.3, 0.7, 0.3, 0.7),
-        y = c(0.6, 0.6, 0.3, 0.3),
-        r = 0.25,
-        color = colors[1:4],
-        name = names(trait_snps)
-    )
-
-    label_text <- sapply(labels[1:15], function(n) {
+    fmt <- function(n) {
         if (show_counts) {
-            paste0(n, if (show_percentages) paste0("\n(", round(n / total * 100, 1), "%)", ""))
+            base <- as.character(n)
+            if (show_percentages) {
+                base <- paste0(base, "\n(", round(n / total * 100, 1), "%)")
+            }
+            base
         } else if (show_percentages) {
             paste0(round(n / total * 100, 1), "%")
         } else {
             ""
         }
-    })
+    }
+
+    label_df <- do.call(rbind, lapply(names(info$regions), function(code) {
+        r <- info$regions[[code]]
+        data.frame(
+            x = r$x, y = r$y,
+            label = fmt(r$count),
+            stringsAsFactors = FALSE
+        )
+    }))
 
     p <- ggplot() +
-        geom_circle(aes(x0 = x, y0 = y, r = r, fill = color, color = color),
-            data = df, alpha = alpha, linewidth = 1
+        geom_ellipse(
+            aes(
+                x0 = x0, y0 = y0, a = a, b = b, angle = angle,
+                fill = color, color = color
+            ),
+            data = ellipses, alpha = alpha, linewidth = 1
         ) +
-        geom_text(aes(x = x, y = y + 0.3, label = name),
-            data = df,
+        geom_text(
+            aes(x = x0, y = y0 + a + b, label = name),
+            data = data.frame(
+                x0 = ellipses$x0, y0 = ellipses$y0,
+                a = ellipses$a, b = ellipses$b,
+                name = names(trait_snps)
+            ),
             size = 3, fontface = "bold"
         ) +
-        mapply(function(pos, lab) {
-            annotate("text", x = pos[1], y = pos[2], label = lab, size = 3, fontface = "bold")
-        }, positions[1:15], label_text) +
+        geom_text(
+            aes(x = x, y = y, label = label),
+            data = label_df, size = 3, fontface = "bold"
+        ) +
         scale_fill_identity() +
         scale_color_identity() +
         coord_fixed(xlim = c(0, 1), ylim = c(0, 1), expand = FALSE) +
@@ -337,8 +391,9 @@ plot_pleiotropy_landscape <- function(pleio_data,
             color = colors[1],
             alpha = 0.6
         ) +
-        geom_density(aes(color = "Density"), linewidth = 1.5, alpha = 0) +
-        scale_color_manual(values = "black", name = "") +
+        geom_density(aes(y = after_stat(density)),
+            color = "black", fill = NA, linewidth = 1.5
+        ) +
         labs(
             title = "Pleiotropy Significance Landscape",
             subtitle = sprintf("N = %d associations", length(pvalues)),

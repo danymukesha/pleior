@@ -7,10 +7,12 @@
 #' @param top_n_snps Integer. Number of top pleiotropic SNPs to include (default: 20)
 #' @param top_n_traits Integer. Number of top traits to include (default: 10)
 #' @param value_col Character. Column to use for heatmap values (default: "PVALUE_MLOG")
-#' @param show_dendrograms Logical. Show row and column dendrograms (default: FALSE)
+#' @param show_dendrograms Logical. If TRUE, rows (SNPs) and columns (traits) are
+#'   ordered by hierarchical clustering (default: FALSE)
 #' @param clustering_method Character. Clustering method: "complete", "average", "ward.D2" (default: "complete")
 #' @param color_palette Character. Color palette: "bluered", "viridis", "plasma", "default" (default: "bluered")
-#' @param scale Character. Scale values: "none", "row", "column" (default: "none")
+#' @param scale Character. Scale values across the heatmap: "none" (default),
+#'   "row" (z-score each SNP) or "column" (z-score each trait)
 #' @param show_values Logical. Show numeric values in cells (default: FALSE)
 #' @param value_format Character. Format string for values (default:  NULL)
 #' @param legend_title Character. Legend title (default: NULL)
@@ -45,7 +47,11 @@ plot_pleiotropy_heatmap <- function(pleio_data,
         value_format <- "%.1f"
     }
     if (is.null(legend_title)) {
-        legend_title <- "-log10(p)"
+        legend_title <- if (identical(value_col, "PVALUE_MLOG")) {
+            "-log10(p)"
+        } else {
+            value_col
+        }
     }
     if (!is.data.frame(pleio_data)) {
         stop("Input must be a data.frame or data.table")
@@ -88,21 +94,40 @@ plot_pleiotropy_heatmap <- function(pleio_data,
     }
 
     heatmap_data <- plot_data |>
-        pivot_wider(names_from = MAPPED_TRAIT, values_from = value, values_fill = 0) |>
-        mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x)))
+        pivot_wider(
+            names_from = MAPPED_TRAIT, values_from = value,
+            values_fill = NA_real_
+        )
 
-    snp_order <- heatmap_data$SNPS
-    trait_order <- colnames(heatmap_data)[-1]
+    scale <- match.arg(scale, c("none", "row", "column"))
+
+    value_matrix <- as.matrix(heatmap_data[, -1, drop = FALSE])
+    if (scale != "none") {
+        zscore <- function(x) {
+            m <- mean(x, na.rm = TRUE)
+            s <- stats::sd(x, na.rm = TRUE)
+            if (is.na(s) || s == 0) rep(0, length(x)) else (x - m) / s
+        }
+        if (scale == "row") {
+            value_matrix <- t(apply(value_matrix, 1, zscore))
+        } else {
+            value_matrix <- apply(value_matrix, 2, zscore)
+        }
+        dimnames(value_matrix) <- list(
+            heatmap_data$SNPS, colnames(heatmap_data)[-1]
+        )
+        heatmap_data[, -1] <- value_matrix
+    }
 
     if (!show_dendrograms) {
         snp_counts_ordered <- plot_data |>
             group_by(SNPS) |>
-            summarise(total = sum(value), .groups = "drop") |>
+            summarise(total = sum(value, na.rm = TRUE), .groups = "drop") |>
             arrange(desc(total))
 
         trait_counts_ordered <- plot_data |>
             group_by(MAPPED_TRAIT) |>
-            summarise(total = sum(value), .groups = "drop") |>
+            summarise(total = sum(value, na.rm = TRUE), .groups = "drop") |>
             arrange(desc(total))
 
         heatmap_data$SNPS <- factor(heatmap_data$SNPS, levels = snp_counts_ordered$SNPS)
@@ -111,17 +136,24 @@ plot_pleiotropy_heatmap <- function(pleio_data,
             pivot_longer(cols = -SNPS, names_to = "MAPPED_TRAIT", values_to = "value") |>
             mutate(MAPPED_TRAIT = factor(MAPPED_TRAIT, levels = trait_counts_ordered$MAPPED_TRAIT))
     } else {
-        snp_dist <- dist(heatmap_data[, -1], method = "euclidean")
+        cluster_matrix <- as.matrix(heatmap_data[, -1, drop = FALSE])
+        cluster_matrix[is.na(cluster_matrix)] <- 0
+
+        snp_dist <- dist(cluster_matrix, method = "euclidean")
         snp_hc <- hclust(snp_dist, method = clustering_method)
 
-        trait_dist <- dist(t(heatmap_data[, -1]), method = "euclidean")
+        trait_dist <- dist(t(cluster_matrix), method = "euclidean")
         trait_hc <- hclust(trait_dist, method = clustering_method)
 
-        heatmap_data$SNPS <- factor(heatmap_data$SNPS, levels = rownames(heatmap_data)[snp_hc$order])
+        heatmap_data$SNPS <- factor(heatmap_data$SNPS,
+            levels = heatmap_data$SNPS[snp_hc$order]
+        )
 
         plot_data_long <- heatmap_data |>
             pivot_longer(cols = -SNPS, names_to = "MAPPED_TRAIT", values_to = "value") |>
-            mutate(MAPPED_TRAIT = factor(MAPPED_TRAIT, levels = colnames(heatmap_data)[-1][trait_hc$order]))
+            mutate(MAPPED_TRAIT = factor(MAPPED_TRAIT,
+                levels = colnames(heatmap_data)[-1][trait_hc$order]
+            ))
     }
 
     colors <- switch(color_palette,
@@ -225,19 +257,23 @@ plot_regional_association <- function(pleio_data,
     }
 
     target_chr <- target_data$CHR_ID[1]
-    target_pos <- as.numeric(target_data$CHR_POS[1])
+    target_pos <- suppressWarnings(as.numeric(target_data$CHR_POS[1]))
 
     region_start <- max(0, target_pos - window_size)
     region_end <- target_pos + window_size
 
     region_data <- pleio_data |>
+        mutate(
+            CHR_ID = as.character(CHR_ID),
+            CHR_POS = suppressWarnings(as.numeric(CHR_POS))
+        ) |>
         filter(
-            CHR_ID == target_chr,
-            as.numeric(CHR_POS) >= region_start,
-            as.numeric(CHR_POS) <= region_end
+            CHR_ID == as.character(target_chr),
+            !is.na(CHR_POS),
+            CHR_POS >= region_start,
+            CHR_POS <= region_end
         ) |>
         mutate(
-            CHR_POS = as.numeric(CHR_POS),
             distance_kb = (CHR_POS - target_pos) / 1000,
             is_target = SNPS == target_snp
         ) |>
@@ -288,10 +324,16 @@ plot_regional_association <- function(pleio_data,
 
     if (show_gene_names && !is.null(gene_data)) {
         gene_regions <- gene_data |>
+            mutate(
+                CHR = as.character(CHR),
+                START = suppressWarnings(as.numeric(START)),
+                END = suppressWarnings(as.numeric(END))
+            ) |>
             filter(
-                CHR == target_chr,
-                START >= region_start,
-                END <= region_end
+                CHR == as.character(target_chr),
+                !is.na(START), !is.na(END),
+                START <= region_end,
+                END >= region_start
             ) |>
             mutate(
                 mid_pos = (START + END) / 2,
@@ -299,16 +341,17 @@ plot_regional_association <- function(pleio_data,
             )
 
         if (nrow(gene_regions) > 0) {
+            gene_track_top <- max(region_data$PVALUE_MLOG, na.rm = TRUE) * 0.08
             p <- p +
                 annotate("rect",
                     xmin = (gene_regions$START - target_pos) / 1000,
                     xmax = (gene_regions$END - target_pos) / 1000,
-                    ymin = -Inf, ymax = -Inf,
-                    alpha = 0.2, fill = "gray70"
+                    ymin = 0, ymax = gene_track_top,
+                    alpha = 0.3, fill = "gray60"
                 ) +
                 annotate("text",
                     x = gene_regions$distance_kb,
-                    y = min(region_data$PVALUE_MLOG) * 0.05,
+                    y = gene_track_top * 1.15,
                     label = gene_regions$NAME,
                     angle = 45, hjust = 0, size = 2.5, color = "gray30"
                 )

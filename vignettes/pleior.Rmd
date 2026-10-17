@@ -193,11 +193,11 @@ print(p_spectrum)
 You can analyze pleiotropy between specific traits of interest:
 
 ```r
-# Define traits of interest
+# Define traits of interest (must match MAPPED_TRAIT exactly)
 target_traits <- c(
-    "Alzheimer's disease",
-    "Type 2 diabetes",
-    "Coronary artery disease"
+    "Alzheimer disease",
+    "type 2 diabetes mellitus",
+    "coronary artery disease"
 )
 
 # Filter for these traits
@@ -227,9 +227,9 @@ A SNP is considered pleiotropic if it shows significant associations with **two 
 
 ### Example Interpretation
 
-Consider a SNP like `rs814573`:
+Consider a SNP like `rs814573` (in the APOE region):
 
-- **Associated with**: Alzheimer's disease, myocardial infarction, LDL cholesterol
+- **Associated with**: myocardial infarction, C-reactive protein measurement
 - **Significance**: p < 5e-8 for all traits
 - **Implication**: This variant affects pathways related to lipid metabolism
 and cardiovascular health

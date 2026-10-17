@@ -9,12 +9,13 @@ This directory contains real GWAS (Genome-Wide Association Study) data sourced f
 - **Version**: 2024 release
 - **License**: GWAS Catalog data is publicly available under CC0 1.0 Universal
 
-## Data File
+## Data Files
 
-### gwas_subset.rda
-The main dataset file used by the pleior package:
+### gwas_subset.rds
+The example dataset in file form (same content as the `data(gwas_subset)`
+package dataset):
 
-- **Rows**: ~2,000-2,500 GWAS associations
+- **Rows**: 2498 GWAS associations
 - **Columns**: 5 essential columns for pleiotropy analysis
   - `SNPS`: SNP identifiers (rs numbers)
   - `MAPPED_TRAIT`: Standardized trait names
@@ -22,27 +23,38 @@ The main dataset file used by the pleior package:
   - `CHR_ID`: Chromosome identifier (1-22, X, Y)
   - `CHR_POS`: Chromosomal position in base pairs
 
+### example_gwas.tsv
+A small tab-separated sample (first 200 rows) used to demonstrate
+`load_gwas_data()`:
+
+```r
+file_path <- system.file("extdata", "example_gwas.tsv", package = "pleior")
+gwas_data <- load_gwas_data(file_path)
+```
+
 ### Traits Included
 
-The dataset includes diverse traits to demonstrate pleiotropy:
+The dataset covers 15 traits:
 
-1. **Body mass index** (BMI)
-2. **Alzheimer's disease**
-3. **Type 2 diabetes**
-4. **Coronary artery disease**
-5. **Blood pressure traits**
-6. **Lipid levels** (LDL, HDL cholesterol)
-7. **Other metabolic traits**
+1. Body mass index, body height
+2. Alzheimer disease, schizophrenia
+3. Myocardial infarction, coronary artery disease
+4. Type 2 diabetes mellitus
+5. Systolic / diastolic blood pressure
+6. LDL, HDL and total cholesterol, triglycerides
+7. C-reactive protein measurement
+8. Asthma
 
 ### Data Processing Pipeline
 
-The dataset was created using the following steps:
+The dataset was created using `data-raw/create_gwas_subset.R`:
 
-1. **Load**: Read complete GWAS catalog associations file (~93 million rows)
-2. **Clean**: Standardize trait names and handle missing values
-3. **Filter**: Keep only genome-wide significant associations (p < 1e-5)
-4. **Select**: Choose top 15 traits by number of associations
-5. **Sample**: Create balanced subset of ~2,500 associations
+1. **Load**: Read complete GWAS catalog associations file
+2. **Select**: Keep associations for the 15 traits above
+3. **Clean**: Standardize trait names and handle missing values
+4. **Collapse**: One row per SNP-trait pair (most significant study kept)
+5. **Sample**: Retain all associations of the strongest pleiotropic SNPs, then
+   fill with a trait-balanced random sample to reach ~2500 rows
 6. **Quality Check**: Ensure all required columns present and valid
 
 ## Pleiotropy in This Dataset
@@ -51,9 +63,10 @@ The curated subset contains **pleiotropic SNPs** - variants associated with mult
 
 Example pleiotropic SNPs you may find:
 
-- **rs814573**: Associated with Alzheimer's disease, myocardial infarction, LDL cholesterol
-- **rs429358**: Associated with multiple metabolic traits
-- Other SNPs with multi-trait associations
+- **rs429358**: Associated with 12 of the 15 traits (APOE region)
+- **rs814573**: Associated with myocardial infarction and C-reactive protein
+- **rs13107325**, **rs3184504**, **rs112875651** and others with multi-trait
+  associations
 
 ## How to Use
 

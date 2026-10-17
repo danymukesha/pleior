@@ -54,3 +54,34 @@ test_that("detect_pleiotropy handles wrong trait", {
         "No pleiotropic SNPs found with current parameters"
     )
 })
+
+test_that("detect_pleiotropy applies multiple-testing correction", {
+    test_data <- data.frame(
+        SNPS = c("rs1", "rs1", "rs2", "rs2"),
+        MAPPED_TRAIT = c("trait1", "trait2", "trait1", "trait2"),
+        PVALUE_MLOG = c(7.5, 7.6, 7.5, 7.6)
+    )
+
+    none <- detect_pleiotropy(test_data, adjust_method = "none")
+    expect_equal(nrow(none), 4)
+
+    bonf <- suppressWarnings(
+        detect_pleiotropy(test_data, adjust_method = "bonferroni")
+    )
+    expect_true(nrow(bonf) < nrow(none))
+})
+
+test_that("detect_pleiotropy clumps co-located SNPs", {
+    test_data <- data.frame(
+        SNPS = c("rs1", "rs2", "rs1", "rs2"),
+        MAPPED_TRAIT = c("trait1", "trait1", "trait2", "trait2"),
+        PVALUE_MLOG = c(10, 12, 11, 13),
+        CHR_ID = "1",
+        CHR_POS = c(100000, 100001, 100000, 100001)
+    )
+
+    clumped <- detect_pleiotropy(test_data, clump_kb = 10)
+    # rs1 (less significant) is dropped in favour of rs2 at the same locus
+    expect_false("rs1" %in% clumped$SNPS)
+    expect_true("rs2" %in% clumped$SNPS)
+})

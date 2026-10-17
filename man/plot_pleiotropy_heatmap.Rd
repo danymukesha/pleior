@@ -27,13 +27,15 @@ plot_pleiotropy_heatmap(
 
 \item{value_col}{Character. Column to use for heatmap values (default: "PVALUE_MLOG")}
 
-\item{show_dendrograms}{Logical. Show row and column dendrograms (default: FALSE)}
+\item{show_dendrograms}{Logical. If TRUE, rows (SNPs) and columns (traits) are
+ordered by hierarchical clustering (default: FALSE)}
 
 \item{clustering_method}{Character. Clustering method: "complete", "average", "ward.D2" (default: "complete")}
 
 \item{color_palette}{Character. Color palette: "bluered", "viridis", "plasma", "default" (default: "bluered")}
 
-\item{scale}{Character. Scale values: "none", "row", "column" (default: "none")}
+\item{scale}{Character. Scale values across the heatmap: "none" (default),
+"row" (z-score each SNP) or "column" (z-score each trait)}
 
 \item{show_values}{Logical. Show numeric values in cells (default: FALSE)}
 

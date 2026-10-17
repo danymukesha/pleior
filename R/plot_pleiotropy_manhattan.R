@@ -6,11 +6,14 @@
 #'
 #' @param pleio_data A data.frame containing pleiotropy analysis results.
 #' @param highlight_snp Character. SNP identifier to highlight (default: NULL).
+#' @param significance_line Numeric. Genome-wide significance threshold as a
+#'   p-value, drawn as a red line (default: 5e-8).
 #' @param title Character. Plot title (default: "Manhattan Plot of Pleiotropic SNPs").
 #'
 #' @return A ggplot2 object representing the Manhattan plot.
 #'
 #' @import ggplot2
+#' @import dplyr
 #'
 #' @examples
 #' data(gwas_subset)
@@ -20,10 +23,10 @@
 #'     print(p)
 #' }
 #'
-#' @import dplyr
 #' @export
 plot_pleiotropy_manhattan <- function(pleio_data,
                                       highlight_snp = NULL,
+                                      significance_line = 5e-8,
                                       title = "Manhattan Plot of Pleiotropic SNPs") {
     if (!is.data.frame(pleio_data)) {
         stop("Input must be a data.frame or data.table")
@@ -42,24 +45,24 @@ plot_pleiotropy_manhattan <- function(pleio_data,
     plot_data <- pleio_data |>
         mutate(
             CHR_ID = as.character(CHR_ID),
-            CHR_POS = as.numeric(CHR_POS),
-            CHR_NUM = as.numeric(ifelse(CHR_ID == "X", "23",
+            CHR_POS = suppressWarnings(as.numeric(CHR_POS)),
+            CHR_NUM = suppressWarnings(as.numeric(ifelse(CHR_ID == "X", "23",
                 ifelse(CHR_ID == "Y", "24", CHR_ID)
-            ))
+            )))
         ) |>
         filter(!is.na(CHR_NUM), !is.na(CHR_POS)) |>
         arrange(CHR_NUM, CHR_POS)
 
-    # if (nrow(plot_data) == 0) {
-    #     stop("No valid chromosomal positions found")
-    # }
+    if (nrow(plot_data) == 0) {
+        stop("No valid chromosomal positions found")
+    }
 
     chr_lengths <- plot_data |>
         group_by(CHR_ID, CHR_NUM) |>
         summarise(MAX_POS = max(CHR_POS), .groups = "drop") |>
         arrange(CHR_NUM) |>
         mutate(
-            CUMPOS_START = cumsum(c(0, MAX_POS[-n()])),
+            CUMPOS_START = cumsum(c(0, MAX_POS[-dplyr::n()])),
             CUMPOS_END = cumsum(MAX_POS),
             CENTER = CUMPOS_START + (MAX_POS / 2)
         )
@@ -71,11 +74,18 @@ plot_pleiotropy_manhattan <- function(pleio_data,
     colors <- rep(c("#1f77b4", "#ff7f0e"), length.out = nrow(chr_lengths))
     names(colors) <- chr_lengths$CHR_ID
 
+    threshold <- -log10(significance_line)
+
     p <- ggplot(plot_data, aes(
         x = PLOT_POS, y = PVALUE_MLOG,
         color = CHR_ID
     )) +
         geom_point(alpha = 0.7, size = 1.5) +
+        geom_hline(
+            yintercept = threshold,
+            linetype = "dashed", color = "red",
+            linewidth = 0.5, alpha = 0.8
+        ) +
         scale_color_manual(values = colors) +
         scale_x_continuous(
             labels = chr_lengths$CHR_ID,
@@ -86,28 +96,35 @@ plot_pleiotropy_manhattan <- function(pleio_data,
         labs(
             x = "Chromosome",
             y = expression(-log[10](P)),
-            title = title
+            title = title,
+            subtitle = paste0(
+                "Genome-wide significance: p < ", significance_line,
+                " (-log10 = ", round(threshold, 1), ")"
+            )
         ) +
-        theme_minimal() +
+        theme_pleiotropy_publication() +
         theme(
             legend.position = "none",
             panel.grid.major.x = element_blank(),
             panel.grid.minor = element_blank(),
-            axis.text.x = element_text(size = 10),
-            plot.title = element_text(hjust = 0.5, size = 14)
+            axis.text.x = element_text(size = 10)
         )
 
-    if (!is.null(highlight_snp) && highlight_snp %in% plot_data$SNPS) {
-        highlight_data <- plot_data |>
-            filter(SNPS == highlight_snp)
+    if (!is.null(highlight_snp)) {
+        if (highlight_snp %in% plot_data$SNPS) {
+            highlight_data <- plot_data |>
+                filter(SNPS == highlight_snp)
 
-        p <- p +
-            geom_point(data = highlight_data, color = "red", size = 3, alpha = 0.8) +
-            geom_text(
-                data = highlight_data,
-                aes(label = SNPS),
-                vjust = -0.5, color = "red", size = 3
-            )
+            p <- p +
+                geom_point(data = highlight_data, color = "red", size = 3, alpha = 0.8) +
+                geom_text(
+                    data = highlight_data,
+                    aes(label = SNPS),
+                    vjust = -0.5, color = "red", size = 3
+                )
+        } else {
+            warning("highlight_snp '", highlight_snp, "' not found in data")
+        }
     }
 
     return(p)

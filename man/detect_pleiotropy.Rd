@@ -4,25 +4,45 @@
 \alias{detect_pleiotropy}
 \title{Detect Pleiotropic SNPs}
 \usage{
-detect_pleiotropy(gwas_data, traits = NULL, pvalue_threshold = 5e-08)
+detect_pleiotropy(
+  gwas_data,
+  traits = NULL,
+  pvalue_threshold = 5e-08,
+  adjust_method = c("none", "bonferroni", "fdr"),
+  clump_kb = NULL
+)
 }
 \arguments{
-\item{gwas_data}{A data.frame containing preprocessed GWAS summary statistics.}
+\item{gwas_data}{A data.frame containing GWAS summary statistics.}
 
 \item{traits}{Character vector. Specific traits to analyze for pleiotropy
-(default: NULL uses all traits).}
+(default: NULL uses all traits). Matching is exact against individual
+traits after splitting multi-trait fields.}
 
 \item{pvalue_threshold}{Numeric. P-value threshold for significance
 (default: 5e-8).}
+
+\item{adjust_method}{Character. Multiple-testing correction applied to all
+associations before thresholding: "none" (default), "bonferroni" or "fdr".}
+
+\item{clump_kb}{Numeric or NULL. If supplied, co-located SNPs within this
+distance (kilobases) are clumped to their most significant representative.
+This is a position-based proxy for LD clumping (default: NULL, no clumping).}
 }
 \value{
-A data.table with pleiotropic SNPs, their associated traits,
-  and significance levels.
+A data.frame with pleiotropic SNPs, one row per SNP-trait
+  association, including `N_TRAITS` and `TRAITS` summary columns.
 }
 \description{
 Identifies SNPs associated with multiple traits in GWAS data. A SNP is
 considered pleiotropic if it shows significant associations with two or
-more distinct traits.
+more distinct traits after applying the significance threshold.
+}
+\details{
+The significance filter is applied *before* traits are counted, so every
+reported pleiotropic SNP has at least two associations passing the
+threshold. Multi-trait `MAPPED_TRAIT` fields (comma- or semicolon-separated)
+are expanded into individual traits.
 }
 \examples{
 data(gwas_subset)

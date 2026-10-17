@@ -26,6 +26,20 @@ test_that("plot_pleiotropy_heatmap validates input", {
     )
 })
 
+test_that("plot_pleiotropy_heatmap supports value scaling", {
+    data(gwas_subset, envir = environment())
+    pleio_data <- detect_pleiotropy(gwas_subset)
+
+    skip_if(nrow(pleio_data) == 0, "No pleiotropic SNPs in test data")
+
+    for (s in c("none", "row", "column")) {
+        p <- plot_pleiotropy_heatmap(pleio_data,
+            top_n_snps = 4, top_n_traits = 4, scale = s
+        )
+        expect_s3_class(p, "ggplot")
+    }
+})
+
 test_that("plot_regional_association creates valid plot", {
     data(gwas_subset, envir = environment())
     pleio_data <- detect_pleiotropy(gwas_subset)

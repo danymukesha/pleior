@@ -64,7 +64,8 @@ head(gwas_subset)
 ## GWAS Data
 
 The package includes a **curated subset of GWAS Catalog data** containing
-approximately 2,500 significant associations across 15 diverse traits.
+2,498 significant associations across 15 diverse traits, covering 1,835 SNPs
+(128 of which are pleiotropic).
 
 ### Data Source
 
@@ -75,19 +76,21 @@ approximately 2,500 significant associations across 15 diverse traits.
 
 ### Included Traits
 
-The dataset includes diverse traits to demonstrate pleiotropy:
+The dataset includes 15 traits spanning disease, metabolic and anthropometric
+phenotypes:
 
-- Body mass index (BMI)
-- Alzheimer's disease
-- Type 2 diabetes
-- Coronary artery disease
-- Blood pressure traits
-- Lipid levels (LDL, HDL cholesterol)
-- Other metabolic traits
+- Body mass index, body height
+- Alzheimer disease, schizophrenia
+- Myocardial infarction, coronary artery disease
+- Type 2 diabetes mellitus
+- Systolic / diastolic blood pressure
+- LDL, HDL and total cholesterol, triglycerides
+- C-reactive protein measurement
+- Asthma
 
 ### Data Quality
 
-- All associations have significant p-values (p < 1e-5)
+- One row per SNP-trait pair (duplicate studies collapsed, most significant kept)
 - Chromosomal positions validated
 - Trait names standardized from GWAS Catalog mapping
 - SNP identifiers cleaned and validated
@@ -166,11 +169,17 @@ associations with **two or more distinct traits**. The output includes:
 
 ### Example: rs814573
 
-This SNP is associated with:
+This SNP sits in the APOE region on chromosome 19. In the curated subset it is
+associated with:
 
-- Alzheimer's disease
 - Myocardial infarction
-- LDL cholesterol
+- C-reactive protein measurement
+
+(In the full GWAS Catalog it additionally maps to an Alzheimer disease
+polygenic risk score and APOE isoform levels, among other traits.)
+
+A more strongly pleiotropic example in the dataset is `rs429358`, which maps
+to 12 of the 15 traits.
 
 **Implications**:
 

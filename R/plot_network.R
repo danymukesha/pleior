@@ -85,30 +85,14 @@ plot_pleiotropy_network <- function(pleio_data,
 
     g <- igraph::graph_from_data_frame(plot_edges, directed = FALSE)
 
-    if ("CHR_ID" %in% names(pleio_data)) {
-        snp_chrom <- pleio_data |>
-            group_by(SNPS) |>
-            summarise(CHR = dplyr::first(CHR_ID), .groups = "drop") |>
-            filter(SNPS %in% top_snps)
-
-        g <- igraph::set_vertex_attr(g, "type",
-            value = ifelse(igraph::V(g)$name %in% snp_chrom$SNPS, "SNP", "Trait")
+    g <- igraph::set_vertex_attr(g, "type",
+        value = ifelse(igraph::V(g)$name %in% top_snps, "SNP", "Trait")
+    )
+    g <- igraph::set_vertex_attr(g, "n_traits",
+        value = ifelse(igraph::V(g)$name %in% snp_counts$SNPS,
+            snp_counts$N_TRAITS[match(igraph::V(g)$name, snp_counts$SNPS)], 1
         )
-        g <- igraph::set_vertex_attr(g, "n_traits",
-            value = ifelse(igraph::V(g)$name %in% snp_counts$SNPS,
-                snp_counts$N_TRAITS[match(igraph::V(g)$name, snp_counts$SNPS)], 1
-            )
-        )
-    } else {
-        g <- igraph::set_vertex_attr(g, "type",
-            value = ifelse(igraph::V(g)$name %in% top_snps, "SNP", "Trait")
-        )
-        g <- igraph::set_vertex_attr(g, "n_traits",
-            value = ifelse(igraph::V(g)$name %in% top_snps,
-                snp_counts$N_TRAITS[match(igraph::V(g)$name, snp_counts$SNPS)], 1
-            )
-        )
-    }
+    )
 
     colors <- get_pleiotropy_colors(color_palette, n = 10)
 
@@ -172,9 +156,10 @@ plot_pleiotropy_network <- function(pleio_data,
 #' @return A ggraph ggplot2 object
 #'
 #' @import ggplot2
-#' @importFrom igraph graph_from_data_frame
+#' @importFrom igraph graph_from_data_frame set_vertex_attr degree
 #' @import ggraph
 #' @importFrom ggrepel geom_text_repel
+#' @importFrom stats setNames
 #'
 #' @examples
 #' data(gwas_subset)
@@ -213,23 +198,22 @@ plot_trait_cooccurrence_network <- function(pleio_data,
     plot_data <- pleio_data |>
         filter(MAPPED_TRAIT %in% trait_counts$MAPPED_TRAIT)
 
-    trait_pairs <- plot_data |>
+    trait_snp_sets <- plot_data |>
         group_by(MAPPED_TRAIT) |>
         summarise(SNPS = list(unique(SNPS)), .groups = "drop") |>
         mutate(N_SNPS = lengths(SNPS))
 
+    snp_sets <- stats::setNames(trait_snp_sets$SNPS, trait_snp_sets$MAPPED_TRAIT)
+
     cooccurrence <- expand.grid(
-        trait1 = trait_pairs$MAPPED_TRAIT,
-        trait2 = trait_pairs$MAPPED_TRAIT,
+        trait1 = trait_snp_sets$MAPPED_TRAIT,
+        trait2 = trait_snp_sets$MAPPED_TRAIT,
         stringsAsFactors = FALSE
     ) |>
         filter(trait1 < trait2) |>
         mutate(
             shared_snps = mapply(function(t1, t2) {
-                length(intersect(
-                    trait_pairs$SNPS[trait_pairs$MAPPED_TRAIT == t1],
-                    trait_pairs$SNPS[trait_pairs$MAPPED_TRAIT == t2]
-                ))
+                length(intersect(snp_sets[[t1]], snp_sets[[t2]]))
             }, trait1, trait2)
         ) |>
         filter(shared_snps >= min_shared_snps)
@@ -249,8 +233,23 @@ plot_trait_cooccurrence_network <- function(pleio_data,
 
     g <- igraph::graph_from_data_frame(edges, directed = FALSE)
 
-    node_data <- trait_counts |>
-        rename(name = MAPPED_TRAIT, n_snps = N_SNPS)
+    node_snps <- stats::setNames(
+        trait_snp_sets$N_SNPS,
+        trait_snp_sets$MAPPED_TRAIT
+    )
+    g <- igraph::set_vertex_attr(g, "n_snps",
+        value = unname(node_snps[igraph::V(g)$name])
+    )
+
+    if (color_by == "degree") {
+        g <- igraph::set_vertex_attr(g, "color_var",
+            value = igraph::degree(g)
+        )
+    } else {
+        g <- igraph::set_vertex_attr(g, "color_var",
+            value = igraph::V(g)$n_snps
+        )
+    }
 
     colors <- get_pleiotropy_colors("viridis", n = 10)
 
@@ -263,13 +262,8 @@ plot_trait_cooccurrence_network <- function(pleio_data,
             range = c(0.5, 4),
             guide = guide_legend(title = "Shared SNPs")
         ) +
-        geom_node_point(aes(size = n_snps, color = n_snps), alpha = 0.8) +
         scale_size_continuous(
             range = c(node_size, node_size * 2),
-            guide = guide_legend(title = "Total SNPs")
-        ) +
-        scale_color_gradientn(
-            colors = colors,
             guide = guide_legend(title = "Total SNPs")
         ) +
         labs(
@@ -283,12 +277,26 @@ plot_trait_cooccurrence_network <- function(pleio_data,
             plot.subtitle = element_text(size = 10, hjust = 0.5)
         )
 
+    if (color_by == "none") {
+        p <- p + geom_node_point(aes(size = n_snps),
+            color = colors[1], alpha = 0.8
+        )
+    } else {
+        p <- p +
+            geom_node_point(aes(size = n_snps, color = color_var), alpha = 0.8) +
+            scale_color_gradientn(
+                colors = colors,
+                guide = guide_legend(
+                    title = if (color_by == "degree") "Degree" else "Total SNPs"
+                )
+            )
+    }
+
     if (show_edge_labels) {
         p <- p + geom_edge_link(aes(label = weight),
-            label_dodge = 0.1,
-            vjust = -0.5,
-            size = 2.5,
-            color = "black",
+            label_size = 2.5,
+            label_dodge = unit(0.15, "lines"),
+            label_colour = "black",
             angle_calc = "along"
         )
     }
