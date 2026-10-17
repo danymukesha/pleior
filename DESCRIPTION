@@ -30,18 +30,11 @@ Imports:
     igraph (>= 1.3.0),
     patchwork (>= 1.1.0),
     scales (>= 1.2.0),
-    stringr (>= 1.5.0),
     tidyr
 Suggests:
-    BiocStyle,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
-biocViews:
-    GenomeWideAssociation,
-    GeneticVariability,
-    Visualization,
-    Software
 URL: https://github.com/danymukesha/pleior, https://danymukesha.github.io/pleior/
 BugReports: https://github.com/danymukesha/pleior/issues
 Config/testthat/edition: 3

@@ -22,6 +22,13 @@
 theme_pleiotropy_publication <- function(journal_style = "default",
                                          base_size = 12,
                                          legend_position = "right") {
+    if (!journal_style %in% c("default", "nature", "science", "pnas")) {
+        stop(
+            "Invalid journal_style. Choose from: ",
+            "default, nature, science, pnas"
+        )
+    }
+
     theme_base <- theme_minimal(base_size = base_size) +
         theme(
             plot.background = element_rect(fill = "white", color = NA),
@@ -46,7 +53,6 @@ theme_pleiotropy_publication <- function(journal_style = "default",
             axis.title = element_text(size = 8, face = "plain"),
             axis.text = element_text(size = 7),
             plot.title = element_text(size = 9, face = "plain", hjust = 0),
-            legend.position = "none",
             legend.text = element_text(size = 6),
             legend.title = element_text(size = 6),
             aspect.ratio = 0.8
@@ -89,14 +95,11 @@ theme_pleiotropy_publication <- function(journal_style = "default",
 #'
 #' @export
 get_pleiotropy_colors <- function(palette_name = "okabe_ito", n = NULL) {
-    palettes <- list(
+    discrete_palettes <- list(
         "okabe_ito" = c(
             "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
             "#D55E00", "#CC79A7", "#000000", "#999999", "#F0F0F0"
         ),
-        "viridis" = scales::viridis_pal(option = "D")(10),
-        "plasma" = scales::viridis_pal(option = "C")(10),
-        "cividis" = scales::viridis_pal(option = "E")(10),
         "blue_red" = c("#0571b0", "#92c5de", "#f7f7f7", "#f4a582", "#ca0020"),
         "default" = c(
             "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
@@ -104,14 +107,45 @@ get_pleiotropy_colors <- function(palette_name = "okabe_ito", n = NULL) {
         )
     )
 
-    if (!palette_name %in% names(palettes)) {
-        stop("Invalid palette_name. Choose from: ", paste(names(palettes), collapse = ", "))
-    }
+    sequential_palettes <- list(
+        "viridis" = "D",
+        "plasma" = "C",
+        "cividis" = "E"
+    )
 
-    colors <- palettes[[palette_name]]
+    if (palette_name %in% names(discrete_palettes)) {
+        colors <- discrete_palettes[[palette_name]]
 
-    if (!is.null(n)) {
-        colors <- colorRampPalette(colors)(n)
+        if (!is.null(n)) {
+            if (is.na(n) || n < 1) {
+                stop("n must be a positive integer")
+            }
+            if (n <= length(colors)) {
+                colors <- colors[seq_len(n)]
+            } else {
+                colors <- grDevices::colorRampPalette(colors)(n)
+            }
+        }
+    } else if (palette_name %in% names(sequential_palettes)) {
+        base_colors <- scales::viridis_pal(
+            option = sequential_palettes[[palette_name]]
+        )(10)
+
+        if (is.null(n)) {
+            colors <- base_colors
+        } else {
+            if (is.na(n) || n < 1) {
+                stop("n must be a positive integer")
+            }
+            colors <- grDevices::colorRampPalette(base_colors)(n)
+        }
+    } else {
+        stop(
+            "Invalid palette_name. Choose from: ",
+            paste(c(names(discrete_palettes), names(sequential_palettes)),
+                collapse = ", "
+            )
+        )
     }
 
     return(colors)
@@ -220,7 +254,10 @@ combine_publication_plots <- function(..., ncol = NULL, nrow = NULL,
 
     if (!is.null(labels) && length(labels) == length(plots)) {
         combined <- combined + plot_annotation(tag_levels = list(labels), tag_prefix = "") &
-            theme(plot.tag = element_text(size = 12, face = "bold"))
+            theme(
+                plot.tag = element_text(size = 12, face = "bold"),
+                plot.tag.position = tag_position
+            )
     }
 
     return(combined)

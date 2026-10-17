@@ -7,7 +7,8 @@
 preprocess_gwas(
   gwas_data,
   pvalue_threshold = 5e-08,
-  columns = c("SNPS", "MAPPED_TRAIT", "PVALUE_MLOG", "CHR_ID", "CHR_POS")
+  columns = c("SNPS", "MAPPED_TRAIT", "PVALUE_MLOG", "CHR_ID", "CHR_POS"),
+  adjust_method = c("none", "bonferroni", "fdr")
 )
 }
 \arguments{
@@ -18,14 +19,21 @@ preprocess_gwas(
 
 \item{columns}{Character vector. Columns to retain in output
 (default: key GWAS columns).}
+
+\item{adjust_method}{Character. Multiple-testing correction applied before
+thresholding: "none" (default), "bonferroni" or "fdr".}
 }
 \value{
-A filtered and cleaned data.table.
+A filtered and cleaned data.frame (of the same class as the input).
 }
 \description{
 Filters and cleans GWAS summary statistics for downstream pleiotropy analysis.
-Removes missing values, applies significance thresholds, and standardizes
-column names.
+Removes missing values, applies significance thresholds, optionally adjusts
+for multiple testing, and standardizes column names.
+}
+\details{
+The -log10(p-value) column (`PVALUE_MLOG`) is derived automatically from a
+raw p-value column (`P-VALUE`, `PVALUE` or `P`) when it is not present.
 }
 \examples{
 data(gwas_subset)

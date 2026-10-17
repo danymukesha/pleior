@@ -47,3 +47,33 @@ test_that("plot_effect_size_comparison validates input", {
         "Column .* not found in data"
     )
 })
+
+test_that("plot_effect_size_comparison honours color_by and error bars", {
+    test_data <- data.frame(
+        SNPS = rep(c("rs1", "rs2"), each = 2),
+        MAPPED_TRAIT = rep(c("t1", "t2"), 2),
+        PVALUE_MLOG = c(10, 11, 12, 13),
+        CHR_ID = c("1", "1", "2", "2"),
+        SE = c(0.1, 0.2, 0.15, 0.25)
+    )
+
+    expect_s3_class(
+        plot_effect_size_comparison(test_data, color_by = "trait"),
+        "ggplot"
+    )
+    expect_s3_class(
+        plot_effect_size_comparison(test_data, color_by = "chromosome"),
+        "ggplot"
+    )
+    expect_s3_class(
+        plot_effect_size_comparison(test_data,
+            show_error_bars = TRUE, error_col = "SE"
+        ),
+        "ggplot"
+    )
+
+    expect_error(
+        plot_effect_size_comparison(test_data, show_error_bars = TRUE),
+        "error_col must be specified"
+    )
+})

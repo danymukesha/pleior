@@ -7,6 +7,7 @@
 plot_pleiotropy_manhattan(
   pleio_data,
   highlight_snp = NULL,
+  significance_line = 5e-08,
   title = "Manhattan Plot of Pleiotropic SNPs"
 )
 }
@@ -14,6 +15,9 @@ plot_pleiotropy_manhattan(
 \item{pleio_data}{A data.frame containing pleiotropy analysis results.}
 
 \item{highlight_snp}{Character. SNP identifier to highlight (default: NULL).}
+
+\item{significance_line}{Numeric. Genome-wide significance threshold as a
+p-value, drawn as a red line (default: 5e-8).}
 
 \item{title}{Character. Plot title (default: "Manhattan Plot of Pleiotropic SNPs").}
 }

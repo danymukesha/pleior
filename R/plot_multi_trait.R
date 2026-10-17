@@ -17,7 +17,6 @@
 #' @return A ggplot2 object
 #'
 #' @import ggplot2
-#' @importFrom tidyr unite
 #'
 #' @examples
 #' data(gwas_subset)
@@ -65,10 +64,10 @@ plot_multi_trait_manhattan <- function(pleio_data,
         filter(MAPPED_TRAIT %in% traits) |>
         mutate(
             CHR_ID = as.character(CHR_ID),
-            CHR_POS = as.numeric(CHR_POS),
-            CHR_NUM = as.numeric(ifelse(CHR_ID == "X", "23",
+            CHR_POS = suppressWarnings(as.numeric(CHR_POS)),
+            CHR_NUM = suppressWarnings(as.numeric(ifelse(CHR_ID == "X", "23",
                 ifelse(CHR_ID == "Y", "24", CHR_ID)
-            ))
+            )))
         ) |>
         filter(!is.na(CHR_NUM), !is.na(CHR_POS)) |>
         arrange(MAPPED_TRAIT, CHR_NUM, CHR_POS)
@@ -80,25 +79,25 @@ plot_multi_trait_manhattan <- function(pleio_data,
     }
 
     chr_lengths <- plot_data |>
-        group_by(MAPPED_TRAIT, CHR_ID, CHR_NUM) |>
+        group_by(CHR_ID, CHR_NUM) |>
         summarise(MAX_POS = max(CHR_POS), .groups = "drop") |>
-        arrange(MAPPED_TRAIT, CHR_NUM) |>
-        group_by(MAPPED_TRAIT) |>
+        arrange(CHR_NUM) |>
         mutate(
-            CUMPOS_START = cumsum(c(0, MAX_POS[-n()])),
+            CUMPOS_START = cumsum(c(0, MAX_POS[-dplyr::n()])),
             CUMPOS_END = cumsum(MAX_POS),
             CENTER = CUMPOS_START + (MAX_POS / 2)
-        ) |>
-        ungroup()
+        )
 
     plot_data <- plot_data |>
         left_join(
-            chr_lengths %>% select(MAPPED_TRAIT, CHR_ID, CUMPOS_START),
-            by = c("MAPPED_TRAIT", "CHR_ID")
+            chr_lengths %>% select(CHR_ID, CUMPOS_START),
+            by = "CHR_ID"
         ) |>
         mutate(PLOT_POS = CUMPOS_START + CHR_POS)
 
-    colors <- get_pleiotropy_colors("okabe_ito", n = 24)
+    chr_levels <- as.character(chr_lengths$CHR_ID)
+    colors <- rep(c("#1f77b4", "#ff7f0e"), length.out = length(chr_levels))
+    names(colors) <- chr_levels
 
     sig_threshold <- -log10(significance_line)
     sugg_threshold <- -log10(suggestive_line)
@@ -118,8 +117,13 @@ plot_multi_trait_manhattan <- function(pleio_data,
             linetype = "dashed", color = "blue",
             linewidth = 0.5, alpha = 0.7
         ) +
-        facet_wrap(~MAPPED_TRAIT, ncol = ncol, scales = "free_x") +
+        facet_wrap(~MAPPED_TRAIT, ncol = ncol, scales = "free_y") +
         scale_color_manual(values = colors) +
+        scale_x_continuous(
+            breaks = chr_lengths$CENTER,
+            labels = chr_levels,
+            expand = c(0.01, 0)
+        ) +
         labs(
             title = "Multi-Trait Manhattan Plot",
             subtitle = paste0(
@@ -137,23 +141,6 @@ plot_multi_trait_manhattan <- function(pleio_data,
             axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
             strip.text = element_text(face = "bold", size = 10)
         )
-
-    facet_data <- chr_lengths |>
-        group_by(MAPPED_TRAIT) |>
-        summarise(
-            chr_labels = paste(CHR_ID, collapse = ";"),
-            chr_centers = paste(CENTER, collapse = ";"),
-            .groups = "drop"
-        )
-
-    plot_data <- plot_data |>
-        left_join(facet_data, by = "MAPPED_TRAIT")
-
-    p <- p + scale_x_continuous(
-        expand = c(0.01, 0),
-        labels = waiver(),
-        breaks = waiver()
-    )
 
     if (!is.null(highlight_snp)) {
         highlight_data <- plot_data |>
@@ -173,6 +160,8 @@ plot_multi_trait_manhattan <- function(pleio_data,
                     vjust = -0.5, color = "darkred", size = 2.5,
                     check_overlap = TRUE
                 )
+        } else {
+            warning("highlight_snp '", highlight_snp, "' not found in data")
         }
     }
 
@@ -187,9 +176,11 @@ plot_multi_trait_manhattan <- function(pleio_data,
 #' @param pleio_data A data.frame containing pleiotropy analysis results
 #' @param top_n_snps Integer. Number of top pleiotropic SNPs to include (default: 15)
 #' @param effect_col Character. Column to use for effect size (default: "PVALUE_MLOG")
-#' @param use_log_scale Logical. Use log scale for effect sizes (default: TRUE)
+#' @param use_log_scale Logical. Use a log10 scale for the effect sizes. Ignored
+#'   when `effect_col` is already a -log10(p) column (default: FALSE)
 #' @param show_error_bars Logical. Show error bars (default: FALSE)
-#' @param error_col Character. Column for standard errors (default: NULL)
+#' @param error_col Character. Column holding the standard error of `effect_col`
+#'   (default: NULL)
 #' @param color_by Character. Color by: "snp", "trait", "chromosome" (default: "snp")
 #' @param flip_coords Logical. Flip x and y coordinates (default: TRUE for horizontal bars)
 #'
@@ -210,7 +201,7 @@ plot_multi_trait_manhattan <- function(pleio_data,
 plot_effect_size_comparison <- function(pleio_data,
                                         top_n_snps = 15,
                                         effect_col = "PVALUE_MLOG",
-                                        use_log_scale = TRUE,
+                                        use_log_scale = FALSE,
                                         show_error_bars = FALSE,
                                         error_col = NULL,
                                         color_by = "snp",
@@ -231,6 +222,17 @@ plot_effect_size_comparison <- function(pleio_data,
         stop("error_col must be specified when show_error_bars = TRUE")
     }
 
+    if (show_error_bars && !error_col %in% names(pleio_data)) {
+        stop("Column '", error_col, "' not found in data")
+    }
+
+    if (color_by == "chromosome" && !"CHR_ID" %in% names(pleio_data)) {
+        stop("color_by = 'chromosome' requires a 'CHR_ID' column")
+    }
+
+    is_neglog_p <- identical(effect_col, "PVALUE_MLOG") ||
+        grepl("m?log", effect_col, ignore.case = TRUE)
+
     snp_counts <- pleio_data |>
         group_by(SNPS) |>
         summarise(N_TRAITS = n(), .groups = "drop") |>
@@ -240,44 +242,53 @@ plot_effect_size_comparison <- function(pleio_data,
     plot_data <- pleio_data |>
         filter(SNPS %in% snp_counts$SNPS) |>
         group_by(SNPS, MAPPED_TRAIT) |>
-        summarise(
-            effect = max(!!sym(effect_col)),
-            .groups = "drop"
-        ) |>
-        mutate(SNPS = factor(SNPS, levels = rev(snp_counts$SNPS)))
+        slice_max(!!sym(effect_col), n = 1, with_ties = FALSE) |>
+        ungroup() |>
+        mutate(
+            effect = .data[[effect_col]],
+            SNPS = factor(SNPS, levels = rev(snp_counts$SNPS))
+        )
 
-    if (show_error_bars && error_col %in% names(pleio_data)) {
-        plot_data <- plot_data |>
-            left_join(
-                pleio_data |>
-                    group_by(SNPS, MAPPED_TRAIT) |>
-                    summarise(se = sd(!!sym(error_col), na.rm = TRUE), .groups = "drop"),
-                by = c("SNPS", "MAPPED_TRAIT")
-            )
+    if (show_error_bars) {
+        plot_data$se <- suppressWarnings(as.numeric(plot_data[[error_col]]))
     }
-
-    colors <- switch(color_by,
-        "snp" = get_pleiotropy_colors("viridis", n = top_n_snps),
-        "trait" = get_pleiotropy_colors("okabe_ito", n = length(unique(plot_data$MAPPED_TRAIT))),
-        "chromosome" = get_pleiotropy_colors("default", n = 24),
-        get_pleiotropy_colors("viridis", n = top_n_snps)
-    )
 
     if (color_by == "snp") {
-        p <- ggplot(plot_data, aes(x = SNPS, y = effect, fill = SNPS))
+        colors <- get_pleiotropy_colors("viridis", n = top_n_snps)
+        p <- ggplot(
+            plot_data,
+            aes(x = SNPS, y = effect, fill = SNPS, group = MAPPED_TRAIT)
+        )
     } else if (color_by == "trait") {
-        p <- ggplot(plot_data, aes(x = SNPS, y = effect, fill = MAPPED_TRAIT))
+        n_traits <- length(unique(plot_data$MAPPED_TRAIT))
+        colors <- get_pleiotropy_colors("okabe_ito", n = n_traits)
+        p <- ggplot(
+            plot_data,
+            aes(x = SNPS, y = effect, fill = MAPPED_TRAIT, group = MAPPED_TRAIT)
+        )
     } else {
-        p <- ggplot(plot_data, aes(x = SNPS, y = effect, fill = SNPS))
+        chroms <- unique(as.character(plot_data$CHR_ID))
+        colors <- rep(c("#1f77b4", "#ff7f0e"), length.out = length(chroms))
+        names(colors) <- chroms
+        plot_data$CHR_ID <- as.character(plot_data$CHR_ID)
+        p <- ggplot(
+            plot_data,
+            aes(
+                x = SNPS, y = effect,
+                fill = CHR_ID, group = MAPPED_TRAIT
+            )
+        )
     }
 
+    dodge <- position_dodge(width = 0.9)
+
     p <- p +
-        geom_bar(stat = "identity", alpha = 0.8) +
+        geom_col(position = dodge, alpha = 0.8) +
         labs(
             title = "Effect Size Comparison Across Traits",
             subtitle = paste("Top", top_n_snps, "pleiotropic SNPs"),
             x = "SNP",
-            y = ifelse(use_log_scale, expression(-log[10](p)), "Effect Size")
+            y = if (is_neglog_p) expression(-log[10](p)) else "Effect Size"
         ) +
         theme_pleiotropy_publication() +
         theme(
@@ -286,19 +297,22 @@ plot_effect_size_comparison <- function(pleio_data,
             axis.text.y = element_text(size = 8)
         )
 
-    if (show_error_bars && "se" %in% names(plot_data)) {
-        p <- p + geom_errorbar(aes(ymin = effect - se, ymax = effect + se),
-            width = 0.2, alpha = 0.5
+    if (show_error_bars) {
+        p <- p + geom_errorbar(
+            aes(ymin = effect - se, ymax = effect + se),
+            position = dodge, width = 0.2, alpha = 0.5
         )
     }
 
     if (color_by == "trait") {
         p <- p + scale_fill_manual(values = colors, name = "Trait")
+    } else if (color_by == "chromosome") {
+        p <- p + scale_fill_manual(values = colors, name = "Chromosome")
     } else {
         p <- p + scale_fill_manual(values = colors, guide = "none")
     }
 
-    if (use_log_scale) {
+    if (use_log_scale && !is_neglog_p) {
         p <- p + scale_y_log10()
     }
 

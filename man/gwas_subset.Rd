@@ -5,7 +5,7 @@
 \alias{gwas_subset}
 \title{GWAS Summary Statistics Subset}
 \format{
-A data.table with 1000-5000 rows and 5 columns:
+A data.table with 2498 rows and 5 columns:
 \describe{
   \item{SNPS}{Character. SNP identifiers (rs numbers)}
   \item{MAPPED_TRAIT}{Character. Standardized trait or phenotype name}
@@ -18,33 +18,53 @@ A data.table with 1000-5000 rows and 5 columns:
 GWAS Catalog associations file (2024 release), downloaded from:
 \url{https://www.ebi.ac.uk/gwas/api/search/downloads/alternative}
 
-The subset was created by:
-1. Loading the complete GWAS catalog associations file
-2. Filtering for genome-wide significant associations (P < 1e-5)
-3. Selecting top traits by number of associations
-4. Creating a balanced subset of ~500 associations
+The subset was created by \code{data-raw/create_gwas_subset.R}:
+1. Loading the complete GWAS Catalog associations file
+2. Selecting 15 traits relevant to complex disease and metabolism
+3. Collapsing duplicate study entries to one row per SNP-trait pair
+   (keeping the most significant association)
+4. Retaining all associations of the strongest pleiotropic SNPs, then
+   filling with a trait-balanced random sample to reach ~2500 rows
 5. Ensuring representation across multiple chromosomes
 }
 \usage{
 gwas_subset
 }
 \description{
-A curated subset of GWAS catalog summary statistics prepared for pleiotropy analysis.
+A curated subset of GWAS Catalog summary statistics prepared for pleiotropy
+analysis.
 }
 \details{
-This dataset contains genome-wide association study (GWAS) summary statistics
-from the GWAS Catalog (https://www.ebi.ac.uk/gwas/), focusing on
-diverse traits to demonstrate pleiotropy detection and visualization.
+This dataset contains genome-wide association study (GWAS) summary
+statistics from the GWAS Catalog (https://www.ebi.ac.uk/gwas/), reduced to
+a small, reproducible set that demonstrates pleiotropy detection and
+visualization. It is the example dataset shipped with `pleior`.
 
 
-This dataset includes associations with diverse traits such as:
+The dataset contains 2498 associations covering 1835 distinct SNPs across
+15 traits. Of these SNPs, 128 are pleiotropic (associated with two or more
+of the 15 traits); the strongest, \code{rs429358} (in the APOE region),
+maps to 12 traits. \code{rs814573}, used as a running example in the
+README, is associated with myocardial infarction and C-reactive protein
+measurement in this subset.
+
+The 15 traits are:
 \itemize{
-  \item Body mass index
-  \item Alzheimer's disease
-  \item Type 2 diabetes
-  \item Coronary artery disease
-  \item Blood pressure traits
-  \item Lipid levels (LDL, HDL cholesterol)
+  \item body mass index
+  \item body height
+  \item Alzheimer disease
+  \item myocardial infarction
+  \item coronary artery disease
+  \item type 2 diabetes mellitus
+  \item systolic blood pressure
+  \item diastolic blood pressure
+  \item low density lipoprotein cholesterol measurement
+  \item high density lipoprotein cholesterol measurement
+  \item triglyceride measurement
+  \item total cholesterol measurement
+  \item C-reactive protein measurement
+  \item asthma
+  \item schizophrenia
 }
 
 The data is suitable for:

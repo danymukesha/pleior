@@ -36,10 +36,7 @@ Preprocess and detect pleiotropic SNPs:
 
 ```{r detect}
 gwas_clean <- preprocess_gwas(gwas_subset, pvalue_threshold = 5e-8)
-pleio_results <- detect_pleiotropy(
-  gwas_clean |>
-    dplyr::filter(stringr::str_detect(MAPPED_TRAIT, 'Alzheimer')) 
-  )
+pleio_results <- detect_pleiotropy(gwas_clean)
 pleio_results$MAPPED_TRAIT <- substr(pleio_results$MAPPED_TRAIT, 1, 20)
 head(pleio_results)
 ```
@@ -128,10 +125,10 @@ if (nrow(pleio_results) > 0) {
 Zoom in on specific genomic regions around pleiotropic SNPs:
 
 ```{r regional, fig.width = 10, fig.height = 6}
-if (nrow(pleio_results) > 0 && "rs10401176" %in% pleio_results$SNPS) {
+if (nrow(pleio_results) > 0 && "rs814573" %in% pleio_results$SNPS) {
   p_regional <- plot_regional_association(
     pleio_results,
-    target_snp = "rs10401176",
+    target_snp = "rs814573",
     window_size = 500000,
     highlight_color = "#E31A1C"
   )
